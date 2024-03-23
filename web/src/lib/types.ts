@@ -28,7 +28,10 @@ export interface Tournament {
 export interface OneVOne {
   oneVoneID: string;
   agents: [Agent, Agent];
+  
   interactions: Interaction[];
+  interactionsLimit: number;
+  
   winner: Agent | null;
   startTime: Date;
 }
