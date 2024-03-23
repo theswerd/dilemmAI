@@ -20,13 +20,13 @@ export interface Agent {
 export interface Tournament {
   tournamentID: string;
   agents: Agent[];
-  oneVones: OnevOne[];
+  oneVones: OneVOne[];
   startTime: Date;
 }
 
-// Each OnevOne will have 7 Interactions to cooperate or defect
-export interface OnevOne {
-  onevOneID: string;
+// Each OneVOne will have 7 Interactions to cooperate or defect
+export interface OneVOne {
+  oneVoneID: string;
   agents: [Agent, Agent];
   interactions: Interaction[];
   winner: Agent | null;
@@ -36,9 +36,9 @@ export interface OnevOne {
 // Each Interaction will encompass 2 decisions, one from each Agent
 export interface Interaction {
   interactionID: string;
-  onevOneID: string;
+  oneVoneID: string;
   decisions: { agentID: string; decision: 'cooperate' | 'defect' }[];
-  outcome: { agentID: string; points: number }[]; // Points gained or lost in this interaction
+  outcome: { agentID: string; points: number }[]; // Points gained or lost for both agents in this interaction
 
 }
 
