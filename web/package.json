@@ -41,6 +41,7 @@
 	"dependencies": {
 		"@huggingface/inference": "^2.6.6",
 		"ai": "^3.0.13",
-		"node-llama-cpp": "^2.8.9"
+		"node-llama-cpp": "^2.8.9",
+    "socket.io-client": "^4.7.5"
 	}
 }
