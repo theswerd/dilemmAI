@@ -1,6 +1,7 @@
 // src/lib/gameLogic.ts
 
 import type { Tournament, OnevOne, Agent, Interaction, Player } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export function createTournament(agents: Agent[]): Tournament {
@@ -15,7 +16,7 @@ export function createTournament(agents: Agent[]): Tournament {
     }
 
     return {
-        tournamentID: Math.random().toString(36).substring(2, 15),
+        tournamentID: uuidv4(),
         agents: agents,
         oneVones: oneVones,
         startTime: new Date()
@@ -25,7 +26,7 @@ export function createTournament(agents: Agent[]): Tournament {
 // Helper function for createTournament
 function createOnevOne(agents: [Agent, Agent]): OnevOne {
     return {
-        onevOneID: Math.random().toString(36).substring(2, 15),
+        onevOneID: uuidv4(),
         agents: agents,
         interactions: [],
         winner: null,
@@ -34,13 +35,38 @@ function createOnevOne(agents: [Agent, Agent]): OnevOne {
 }
 
 
-// Create a new Interaction after both Agents have made their decisions
 export function createInteraction(onevOneID: string, decisions: { agentID: string; decision: 'cooperate' | 'defect' }[]): Interaction {
+    const outcome = calculateOutcome(decisions);
 
     return {
-    interactionID: Math.random().toString(36).substring(2, 15),
-    onevOneID,
-    decisions,
-  };
+        interactionID: uuidv4(), 
+        onevOneID,
+        decisions,
+        outcome
+    };
+}
 
+function calculateOutcome(decisions: { agentID: string; decision: 'cooperate' | 'defect' }[]): { agentID: string; points: number }[] {
+    // Point calculation based on the Prisoner's Dilemma payoff matrix
+    const [firstDecision, secondDecision] = decisions;
+
+    // Both cooperate: 3 points each
+    if (firstDecision.decision === 'cooperate' && secondDecision.decision === 'cooperate') {
+        return [{ agentID: firstDecision.agentID, points: 3 }, { agentID: secondDecision.agentID, points: 3 }];
+    } 
+    
+    // Both defect: -1 point each
+    else if (firstDecision.decision === 'defect' && secondDecision.decision === 'defect') {
+        return [{ agentID: firstDecision.agentID, points: -1 }, { agentID: secondDecision.agentID, points: -1 }];
+    } 
+    
+    // One cooperates, the other defects: 5 points for the defector, -1 point for the cooperator
+    else if (firstDecision.decision === 'cooperate' && secondDecision.decision === 'defect') {
+        return [{ agentID: firstDecision.agentID, points: -1 }, { agentID: secondDecision.agentID, points: 5 }];
+    } 
+    
+    // One defects, the other cooperates: 5 points for the defector, -1 point for the cooperator
+    else { // firstDecision.defect && secondDecision.cooperate
+        return [{ agentID: firstDecision.agentID, points: 5 }, { agentID: secondDecision.agentID, points: -1 }];
+    }
 }

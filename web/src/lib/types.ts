@@ -38,6 +38,8 @@ export interface Interaction {
   interactionID: string;
   onevOneID: string;
   decisions: { agentID: string; decision: 'cooperate' | 'defect' }[];
+  outcome: { agentID: string; points: number }[]; // Points gained or lost in this interaction
+
 }
 
 // TODO: Data type for the progress of a given OnevOne
