@@ -1,34 +1,35 @@
 import {fileURLToPath} from "url";
 import path from "path";
-import {LlamaModel, LlamaContext, LlamaChatSession, LlamaGrammar} from "node-llama-cpp";
-
-export const callAI = async (messages: string[]): Promise<string> => {
+import {LlamaModel, LlamaContext, LlamaChatSession, LlamaGrammar,} from "node-llama-cpp";
 
 	
-	const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 	
-	const model = new LlamaModel({
-		modelPath: path.join(__dirname,"..","..", "models", "carl-llama-2-13b.Q8_0.gguf"),
-		
-	});
-	const context = new LlamaContext({model, });
-	const session = new LlamaChatSession({context});
+const model = new LlamaModel({
+	modelPath: path.join(__dirname,"..","..", "models", "carl-llama-2-13b.Q8_0.gguf"),
 	
+});
+
+
+
+export const callAI = async (prompts: {
+	admin: string, 
+	prompt: string,
+}): Promise<string> => {
+	const context = new LlamaContext({model });
+
+	const session = new LlamaChatSession({context, systemPrompt: `
+	You are a game playing agent. You always respond with json objects with the key 'action' and the value 'cooperate' or 'defect'. Do not include any other keys.
+	`});
+	// session.init();
+
+	console.log("User: " + prompts);
 	
-	const q1 = "Hi there, how are you? Answer in json.";
-	console.log("User: " + q1);
-	
-	const a1 = await session.prompt(q1, {
+	const a1 = await session.prompt(prompts.prompt, {
 		grammar:await LlamaGrammar.getFor("json"),
+		maxTokens: 300,
 	});
 	console.log("AI: " + a1);
 	
-	
-	// const q2 = "Summerize what you said";
-	// console.log("User: " + q2);
-	
-	// const a2 = await session.prompt(q2);
-	// console.log("AI: " + a2);
- 
 	return a1;
 }
