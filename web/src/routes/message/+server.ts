@@ -14,5 +14,5 @@ export async function GET() {
 	// const { messages } =
 	
 
-	return text(await callAI(["Hello, how are you?"]));
+	return text(await callAI(["I have defected 10 times, and cooperated 12 times with you. If you want to defect, write: \"Defect\", or if you want to cooperate, write \"Cooperate\""]));
 }
