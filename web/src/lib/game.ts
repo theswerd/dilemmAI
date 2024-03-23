@@ -1,4 +1,5 @@
-// src/lib/gameLogic.ts
+import { Server as SocketIOServer } from 'socket.io';
+
 
 import type { Tournament, OneVOne, Agent, Interaction, Player } from './types';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,7 +12,7 @@ export function createTournament(agents: Agent[]): Tournament {
     const oneVones: OneVOne[] = [];
     for (let i = 0; i < agents.length; i++) {
         for (let j = i + 1; j < agents.length; j++) {
-            oneVones.push(createOnevOne([agents[i], agents[j]]));
+            oneVones.push(createOneVOne([agents[i], agents[j]]));
         }
     }
 
@@ -24,11 +25,12 @@ export function createTournament(agents: Agent[]): Tournament {
 }
 
 // Helper function for createTournament
-function createOnevOne(agents: [Agent, Agent]): OneVOne {
+function createOneVOne(agents: [Agent, Agent]): OneVOne {
     return {
         oneVoneID: uuidv4(),
         agents: agents,
         interactions: [],
+        interactionsLimit: 7,
         winner: null,
         startTime: new Date()
     };
@@ -44,25 +46,6 @@ export function createInteraction(oneVoneID: string, decisions: { agentID: strin
         decisions,
         outcome
     };
-}
-
-
-// Simultaneously start all OnevOnes in the tournament
-function startTournament(tournament: Tournament): void {
-    tournament.oneVones.forEach(oneVone => {
-        startOneVOne(oneVone);
-    });
-
-    // Update the tournament status
-}
-
-function startOneVOne(oneVone: OneVOne): void {
-    // Start the OnevOne process, possibly with time delays between interactions
-    oneVone.startTime = new Date();
-
-    // Conduct interactions here
-    const interactionsLimit = 7;
-
 }
 
 
@@ -89,4 +72,41 @@ function calculateOutcome(decisions: { agentID: string; decision: 'cooperate' | 
     else { // firstDecision.defect && secondDecision.cooperate
         return [{ agentID: firstDecision.agentID, points: 5 }, { agentID: secondDecision.agentID, points: -1 }];
     }
+}
+
+
+// Simultaneously start all OnevOnes in the tournament
+function startTournament(tournament: Tournament): void {
+    tournament.oneVones.forEach(oneVone => {
+        startOneVOne(oneVone);
+    });
+}
+
+function startOneVOne(oneVone: OneVOne): void {
+    // Start the OnevOne process, possibly with time delays between interactions
+    oneVone.startTime = new Date();
+
+    // Conduct interactions here
+
+    // OneVOne ends when the interactions limit is reached...
+    const interactionsLimit = oneVone.interactionsLimit
+    if (oneVone.interactions.length >= interactionsLimit) {
+        // End the OnevOne
+        return;
+    }
+
+    // ...otherwise...
+    const decisions = getDecisionsForOneVOne(oneVone);
+    const interaction = createInteraction(oneVone.oneVoneID, decisions);
+    oneVone.interactions.push(interaction);
+}
+
+
+function getDecisionsForOneVOne(oneVOne: OneVOne): { agentID: string; decision: 'cooperate' | 'defect' }[] {
+    // Placeholder for the decision-making logic
+    // In the real application, this would involve fetching decisions from the agents
+    return [
+        { agentID: oneVOne.agents[0].agentID, decision: 'cooperate' },
+        { agentID: oneVOne.agents[1].agentID, decision: 'defect' }
+    ];
 }
