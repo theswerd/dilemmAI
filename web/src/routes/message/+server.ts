@@ -2,7 +2,7 @@
 // import { experimental_buildOpenAssistantPrompt } from 'ai/prompts';
 
 import { callAI } from "$lib/call-ai";
-import { json, text } from "@sveltejs/kit";
+import { text } from "@sveltejs/kit";
 
 // Create a new HuggingFace Inference instance
 // const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
