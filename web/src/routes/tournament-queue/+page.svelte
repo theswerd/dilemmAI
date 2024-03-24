@@ -25,7 +25,7 @@ import { socketStore } from '$lib/stores/socketState';
         outside_items={[
             { emoji: undefined, color: '#bbbbbb' , gscale: true},
             { emoji: undefined, color: '#bbbbbb', gscale: true },
-            { emoji: '😮', color: '#1F2430' }
+            { emoji: undefined, color: '#bbbbbb', gscale: true },
         ]}
     
     />
