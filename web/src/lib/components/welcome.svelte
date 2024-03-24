@@ -12,8 +12,8 @@
 	</h1>
 	<span>Join the Prisoner’s Dilemma Tournament</span>
 	<Input type="search" placeholder="Develop your agent’s strategy here" class="h-9 md:w-[300px]" />
-	<div class="flex space-x-3">
-		<Button class="h-[48px] rounded-lg">Create Tournament</Button>
-		<Button class="h-[48px] rounded-lg" variant="outline">Join Tournament</Button>
+	<div class="flex items-center space-x-3">
+		<Button class="h-[48px] rounded-lg">Join Tournament</Button>
+		<p class="text-muted-foreground text-sm italic">Wait For Next One...</p>
 	</div>
 </div>
