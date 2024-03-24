@@ -1,11 +1,13 @@
 import { Server } from 'socket.io';
-import { type Socket } from 'socket.io-client';
 import {v4 as uuidv4} from 'uuid';
 import { createServer } from 'http';
 import type { ActiveTournament, Agent, Interaction, OneVOne, Player, PlayerSession, Tournament } from './types';
 import { createTournament } from './game';
-import { Tornado } from 'lucide-svelte';
 import { callAI } from './call-ai';
+import { createAdapter } from '@socket.io/mongo-adapter';
+import { client } from './database';
+
+
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -14,6 +16,12 @@ const io = new Server(httpServer, {
         methods: ['GET', 'POST']
     }
 });
+
+io.adapter(
+  createAdapter(
+    client.db().collection("sockets")
+  )
+)
 
 // uniquePairs = [[[1,2], [3,4]], [[1,3], [2,4]], [[1,4], [2,3]]]
 // oneVones is a List of Rounds of OneVOnes

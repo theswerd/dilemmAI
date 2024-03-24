@@ -1,7 +1,7 @@
 import { Server as SocketIOServer } from 'socket.io';
 
 
-import type { OneVOne,Agent, Interaction, Player, PlayerSession, ActiveTournament } from './types';
+import type { OneVOne, Agent, Interaction, Player, PlayerSession, ActiveTournament } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 
