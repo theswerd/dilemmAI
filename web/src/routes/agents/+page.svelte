@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import MainNav from '$lib/components/mainNav.svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -133,9 +134,43 @@
 								#{agent.agentID}
 							</div>
 						</div>
+						<button
+							class="flex h-[40px] w-[40px] items-center justify-center rounded-full"
+							style={`background-color: ${agent.agentColor}; `}
+							on:click={() => {
+								window.open('/tournament?agent_id=' + agent.agentID, '_blank');
+								goto('/tournament-queue?agent_id=' + agent.agentID);
+							}}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="1.5em"
+								height="1.5em"
+								viewBox="0 0 24 24"
+								><path
+									fill="currentColor"
+									d="m4.497 20.835l16.51-7.363c1.324-.59 1.324-2.354 0-2.944L4.497 3.164c-1.495-.667-3.047.814-2.306 2.202l3.152 5.904c.245.459.245 1 0 1.458l-3.152 5.904c-.74 1.388.81 2.87 2.306 2.202"
+								/></svg
+							>
+						</button>
 					</div>
 				{/each}
 			{/if}
+			<div class="flex items-center justify-center p-4">
+				<button
+					class="rounded-full border"
+					on:click={() => {
+						goto('/create-agent');
+					}}
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"
+						><path
+							fill="currentColor"
+							d="M11 13H6q-.425 0-.712-.288T5 12q0-.425.288-.712T6 11h5V6q0-.425.288-.712T12 5q.425 0 .713.288T13 6v5h5q.425 0 .713.288T19 12q0 .425-.288.713T18 13h-5v5q0 .425-.288.713T12 19q-.425 0-.712-.288T11 18z"
+						/></svg
+					>
+				</button>
+			</div>
 		</div>
 	</div>
 </main>
