@@ -16,6 +16,8 @@ export interface PlayerSession {
 export interface Player {
   name: string;
   pfpEmoji: string;
+
+  nickname: string; // for identifying player AFTER auth0 login
 }
 
 export interface Agent {
