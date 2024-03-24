@@ -25,10 +25,18 @@
 					opponent: {
 						id: '3',
 						name: 'Player 3',
-						score: 130,
-						matchHistories: []
+						score: 130
 					},
 					result: 'increase'
+				},
+				{
+					opponent: {
+						id: '4',
+						name: 'Player 4',
+						score: 123,
+						matchHistories: []
+					},
+					result: 'decrease'
 				}
 			]
 		},
@@ -51,6 +59,14 @@
 						name: 'Player 3',
 						score: 102,
 						matchHistories: []
+					},
+					result: 'increase'
+				},
+				{
+					opponent: {
+						id: '4',
+						name: 'Player 4',
+						score: 107
 					},
 					result: 'increase'
 				}
@@ -77,6 +93,46 @@
 						matchHistories: []
 					},
 					result: 'decrease'
+				},
+				{
+					opponent: {
+						id: '4',
+						name: 'Player 4',
+						score: 72
+					},
+					result: 'increase'
+				}
+			]
+		},
+		{
+			id: '4',
+			name: 'Player 4',
+			score: 100,
+			matchHistories: [
+				{
+					opponent: {
+						id: '1',
+						name: 'Player 1',
+						score: 107
+					},
+					result: 'increase'
+				},
+				{
+					opponent: {
+						id: '2',
+						name: 'Player 2',
+						score: 102,
+						matchHistories: []
+					},
+					result: 'decrease'
+				},
+				{
+					opponent: {
+						id: '3',
+						name: 'Player 3',
+						score: 97
+					},
+					result: 'decrease'
 				}
 			]
 		}
@@ -86,16 +142,24 @@
 		player.matchHistories[1].opponent.score.toString()
 	);
 	// make a 4 * 4 array
-	let data: string[][] = Array.from({ length: 4 }, () => Array.from({ length: 5 }, () => ''));
-	data[0] = ['', 'Player 1', 'Player 2', 'Player 3', 'Total Score'];
-	data[1][0] = 'Player 1';
-	data[2][0] = 'Player 2';
-	data[3][0] = 'Player 3';
+	let data: any[][] = Array.from({ length: 5 }, () => Array.from({ length: 6 }, () => ''));
+	data[0] = [
+		'',
+		{ color: '#F9E05A', emoji: '⭐' },
+		{ color: '#8DFCBC', emoji: '🤗' },
+		{ color: '#FF0000', emoji: '👬' },
+		{ color: '#e18bf7', emoji: '👁️‍🗨️' }
+	];
+	data[1][0] = { color: '#F9E05A', emoji: '⭐' };
+	data[2][0] = { color: '#8DFCBC', emoji: '🤗' };
+	data[3][0] = { color: '#FF0000', emoji: '👬' };
+	data[4][0] = { color: '#e18bf7', emoji: '👁️‍🗨️' };
 
-	data[0][4] = 'Total Score';
-	data[1][4] = totalScores[0];
-	data[2][4] = totalScores[1];
-	data[3][4] = totalScores[2];
+	data[0][5] = 'Total Score';
+	data[1][5] = totalScores[0];
+	data[2][5] = totalScores[1];
+	data[3][5] = totalScores[2];
+	data[4][5] = totalScores[2];
 
 	console.log(data);
 	examplePlayers.map((player, i) => {
@@ -125,6 +189,13 @@
 						<span class="icon loss">&#x25BC;</span> <!-- Triangle pointing down -->
 					{:else if cell === 'draw'}
 						<span class="icon draw">&#x25CF;</span> <!-- Circle -->
+					{:else if (i === 0 || j === 0) && cell.emoji}
+						<div
+							class=" flex aspect-square h-16 w-16 items-center justify-center rounded-full border-2 text-4xl"
+							style={`background-color: ${cell.color};`}
+						>
+							{cell.emoji}
+						</div>
 					{:else}
 						{cell}
 					{/if}
@@ -208,7 +279,7 @@
 <style>
 	.grid-table {
 		display: grid;
-		grid-template-columns: repeat(5, minmax(120px, 1fr));
+		grid-template-columns: repeat(6, minmax(120px, 1fr));
 		gap: 0.5rem;
 		max-width: 800px;
 		margin: 20px;
@@ -223,10 +294,11 @@
 		min-height: 50px;
 	}
 	.header-cell {
-		background-color: #23f2c8;
+		background-color: #ffffff;
 		color: #ffffff;
 		font-weight: bold;
-		@apply rounded-md border border-gray-500;
+		border: 0px;
+		/* @apply rounded-md border border-gray-500; */
 	}
 	.data-cell {
 		background-color: #ffffff;
@@ -234,7 +306,7 @@
 	}
 	.icon {
 		display: inline-block;
-		font-size: 24px;
+		font-size: 28px;
 		line-height: 1;
 	}
 	.win {
