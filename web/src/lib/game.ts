@@ -1,7 +1,7 @@
 import { Server as SocketIOServer } from 'socket.io';
 
 
-import type { OneVOne,Agent, Interaction, Player, PlayerSession, ActiveTournament } from './types';
+import type { OneVOne,Agent, Interaction, PlayerSession, ActiveTournament } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -18,13 +18,12 @@ export function createTournament(playerSessions: PlayerSession[]): ActiveTournam
     return {
         tournamentID: uuidv4(),
         playerSessions: playerSessions,
-        oneVones: uniquePairs.map((round) => round.map(([agent1, agent2]) => ({
-            oneVoneID: uuidv4(),
-            agents: [agents[agent1], agents[agent2]],
-            interactions: [],
-            interactionsLimit: 7,
-            winner: null,
-            startTime: new Date()
+        oneVones: uniquePairs.flat().map((game) => game.map(([agent1, agent2]) => ({
+        oneVoneID: uuidv4(),
+        agents: [agents[agent1], agents[agent2]],
+        interactions: [],
+        interactionsLimit: 7,
+        winner: null,
         }))),
         round: 0
     };
@@ -43,6 +42,31 @@ export function createInteraction(oneVoneID: string, decisions: { agentID: strin
     };
 }
 
+const ActionScore = {
+    "co-co": 3,
+    "co-de": -1,
+    "de-co": 5,
+    "de-de": -1
+}
+
+
+export function calAgentScores(agent: Agent, interactions: Interaction[]) {
+    const score = interactions.reduce((acc: number, interaction: Interaction) => { 
+        const yourDecision = interaction.decisions.find(({ agentID }) => agentID === agent.agentID)!;
+        const otherDecision = interaction.decisions.find(({ agentID }) => agentID !== agent.agentID)!;
+        if (yourDecision.decision === "cooperate" && otherDecision.decision === "cooperate") {
+            return acc + ActionScore['co-co'];
+        } else if (yourDecision.decision === "defect" && otherDecision.decision === "defect") {
+            return acc + ActionScore['de-de'];
+        } else if (yourDecision.decision === "cooperate" && otherDecision.decision === "defect") {
+            return acc + ActionScore['co-de'];
+        } else {
+            return acc + ActionScore['de-co'];
+        }
+    }, 0)
+
+    return score;
+}
 
 function calculateOutcome(decisions: { agentID: string; decision: 'cooperate' | 'defect' }[]): { agentID: string; points: number }[] {
     // Point calculation based on the Prisoner's Dilemma payoff matrix
@@ -70,38 +94,38 @@ function calculateOutcome(decisions: { agentID: string; decision: 'cooperate' | 
 }
 
 
-// Simultaneously start all OnevOnes in the tournament
-function startTournament(tournament: Tournament): void {
-    tournament.oneVones.forEach(oneVone => {
-        startOneVOne(oneVone);
-    });
-}
+// // Simultaneously start all OnevOnes in the tournament
+// function startTournament(tournament: Tournament): void {
+//     tournament.oneVones.forEach(oneVone => {
+//         startOneVOne(oneVone);
+//     });
+// }
 
-function startOneVOne(oneVone: OneVOne): void {
-    // Start the OnevOne process, possibly with time delays between interactions
-    oneVone.startTime = new Date();
+// function startOneVOne(oneVone: OneVOne): void {
+//     // Start the OnevOne process, possibly with time delays between interactions
+//     oneVone.startTime = new Date();
 
-    // Conduct interactions here
+//     // Conduct interactions here
 
-    // OneVOne ends when the interactions limit is reached...
-    const interactionsLimit = oneVone.interactionsLimit
-    if (oneVone.interactions.length >= interactionsLimit) {
-        // End the OnevOne
-        return;
-    }
+//     // OneVOne ends when the interactions limit is reached...
+//     const interactionsLimit = oneVone.interactionsLimit
+//     if (oneVone.interactions.length >= interactionsLimit) {
+//         // End the OnevOne
+//         return;
+//     }
 
-    // ...otherwise...
-    const decisions = getDecisionsForOneVOne(oneVone);
-    const interaction = createInteraction(oneVone.oneVoneID, decisions);
-    oneVone.interactions.push(interaction);
-}
+//     // ...otherwise...
+//     const decisions = getDecisionsForOneVOne(oneVone);
+//     const interaction = createInteraction(oneVone.oneVoneID, decisions);
+//     oneVone.interactions.push(interaction);
+// }
 
 
-function getDecisionsForOneVOne(oneVOne: OneVOne): { agentID: string; decision: 'cooperate' | 'defect' }[] {
-    // Placeholder for the decision-making logic
-    // In the real application, this would involve fetching decisions from the agents
-    return [
-        { agentID: oneVOne.agents[0].agentID, decision: 'cooperate' },
-        { agentID: oneVOne.agents[1].agentID, decision: 'defect' }
-    ];
-}
+// function getDecisionsForOneVOne(oneVOne: OneVOne): { agentID: string; decision: 'cooperate' | 'defect' }[] {
+//     // Placeholder for the decision-making logic
+//     // In the real application, this would involve fetching decisions from the agents
+//     return [
+//         { agentID: oneVOne.agents![0].agentID, decision: 'cooperate' },
+//         { agentID: oneVOne.agents![1].agentID, decision: 'defect' }
+//     ];
+// }

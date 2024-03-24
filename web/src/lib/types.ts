@@ -28,19 +28,30 @@ export interface Agent {
 export interface ActiveTournament {
   tournamentID: string;
   playerSessions: PlayerSession[];
-  oneVones: Array<OneVOne[]>;
+  oneVones: OneVOne[][];
   round: number;
-  summary?: string;
+}
+
+export type MatchHistory = {
+      opponent: Agent;
+      result: 'increase' | 'decrease' | 'draw';
+    }[]
+
+export interface TournamentStats {
+  tournamentID: string;
+  agentsInfo: { agent: Agent, playerScore: number }[];
+  matchHistory: {
+    agent: Agent, 
+    opponents: MatchHistory
+  }[]
 }
 
 // Each OneVOne will have 7 Interactions to cooperate or defect
 export interface OneVOne {
   oneVoneID: string;
   agents?: [Agent, Agent];
-  
   interactions: Interaction[];
   interactionsLimit: number;
-  agentScores: number[];
   winner: Agent | null;
 }
 

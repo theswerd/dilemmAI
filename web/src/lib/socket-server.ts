@@ -1,10 +1,8 @@
 import { Server } from 'socket.io';
-import { type Socket } from 'socket.io-client';
 import {v4 as uuidv4} from 'uuid';
 import { createServer } from 'http';
-import type { ActiveTournament, Agent, Interaction, OneVOne, Player, PlayerSession, Tournament } from './types';
-import { createTournament } from './game';
-import { Tornado } from 'lucide-svelte';
+import type { ActiveTournament, Agent, Interaction, MatchHistory, OneVOne, Player, PlayerSession, Tournament, TournamentStats } from './types';
+import { createTournament, calAgentScores} from './game';
 import { callAI } from './call-ai';
 
 const httpServer = createServer();
@@ -20,11 +18,10 @@ const io = new Server(httpServer, {
 // Each Round is a List of OneVOnes
 // All OneVOnes in a Round are played simultaneously
 // let uniquePairs: Array<Array<OneVOne>>  = []
-let gameStarted: boolean = false;
-let round: number = 0;
+// let gameStarted: boolean = false;
 let playersQueue: Array<PlayerSession> = [];
 let tournament: ActiveTournament; 
-let tournamentRound: Array<OneVOne[]>;
+// let tournamentRound: Array<OneVOne[]>;
 
 
 
@@ -56,7 +53,8 @@ io.on('connect', (socket) => {
       }});
       io.to(tournament.tournamentID).emit('tournamentStart', tournament);
 
-      startTourament(io, tournament);
+      runTourament(io, tournament);
+      
     }
 
     // start first round of tournament
@@ -67,61 +65,72 @@ io.on('connect', (socket) => {
 
     // Player disconnects
     socket.on('disconnect', () => {
-        let player = players[socketIdToPublicKey[socket.id]];
-        if (!player) {
-            console.log(`User ${socket.id} not found.`);
-            return;
-        }
 
-        delete players[player.pubKey];
-        delete socketIdToPublicKey[socket.id];
-        delete leaderBoard[player.pubKey];
-        totalPlayers--;
-        // playerIdxToPublicKey = Object.entries(playerIdxToPublicKey).reduce((acc, [idx, publicKey]) => {
-        //     if (player.publicKey === publicKey) {
-        //         return acc;
-        //     }
-
-        // }, {})
-        if (player.isHost) {
-            gameStarted = false;
-        }
-        console.log(`User ${socket.id} disconnected. Total players: ${Object.keys(players).length}`);
-        io.emit('updatePlayers', Object.values(players));
     });
 
-    // Listen for host starting the game
-    socket.on('startRounds', () => {
-        tournament = createTournament(agents)
-        gameStarted = true;
-        console.log(`Host ${socket.id} started the game.`)
-        io.emit("promptStart");
-    }); 
-
-    
-    socket.on('', () => {
-      tournament = createTournament(agents);
-
-    })
-
-
-
-    
-    
 });
 
 const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
 
 
-async function startTourament(io: Server, tournament: ActiveTournament): Promise<void> {
+async function runTourament(io: Server, tournament: ActiveTournament): Promise<void> {
   for (let i = 0; i < tournament.oneVones.length; i++) {
     tournament.round += 1;
     await runRound(io, tournament, i);
   }
+  const tournamentStats = generateTournamentStats(tournament);
 
-
+  io.to(tournament.tournamentID).emit('tournamentFinish', tournamentStats);
 }
+
+
+function generateTournamentStats(tournament: ActiveTournament): TournamentStats {
+
+  const agents = tournament.playerSessions.map(({ agent }) => agent); 
+  const agentsInfo: { agent: Agent, playerScore: number }[]  = [];
+  const matchHistories:  {
+    agent: Agent, 
+    opponents: MatchHistory}[] = []
+  agents.forEach((agent) => {
+    const agentGames = tournament.oneVones.map((round) => {
+      return round.find((game) => {
+        return game.agents?.includes(agent);
+      })!
+    })
+    const [matchHistory, totalScore] = generateMatchHistorys(agent, agentGames);
+    matchHistories.push({
+      agent: agent,
+      opponents: matchHistory});
+    agentsInfo.push({
+      agent,
+      playerScore: totalScore
+    })
+
+    // start from the first one
+  })
+  return {
+    tournamentID: tournament.tournamentID,
+    agentsInfo,
+    matchHistory: matchHistories
+  }
+}
+
+
+function generateMatchHistorys(agent: Agent, games: OneVOne[]): [MatchHistory, number] {
+  return games.reduce((acc, game: OneVOne) => {
+    const interactions = game.interactions;
+    const newScore = calAgentScores(agent, interactions)
+    const agentGameScore = acc[1] + newScore
+
+    return [[...acc[0], {
+      opponent: game.agents!.find((gameAgent) => gameAgent.agentID !== agent.agentID)!,
+      result: newScore > 0 ? 'increase' : newScore < 0 ? 'decrease' : 'draw'
+    }], agentGameScore]
+  }, [[], 100] as [MatchHistory,number])
+}
+
+
 
 
 
