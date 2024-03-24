@@ -5,6 +5,10 @@
 	import { Input } from './ui/input';
 
 	export let availableAgents: Agent[]
+
+	const createAgent =  () => {
+		goto('/create-agent')
+	}
 </script>
 
 <div
@@ -28,6 +32,6 @@
 			}
 		
 		}}>Join Tournament</Button>
-		<Button class="h-[48px] rounded-lg bg-transparent text-black border-black border-[1px] hover:bg-gray-100 focus:bg-gray-300">Learn More</Button>
+		<Button on:click={createAgent} class="h-[48px] rounded-lg bg-transparent text-black border-black border-[1px] hover:bg-gray-100 focus:bg-gray-300">Learn More</Button>
 	</div>
 </div>

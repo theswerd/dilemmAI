@@ -26,11 +26,11 @@ async function initializeAuth0() {
 
     // Set the user authentication status
     const authenticated = await client.isAuthenticated();
-    console.log('Authenticated:', authenticated);
     isAuthenticated.set(authenticated);
     if (authenticated) {
         const user = await client.getUser();
         userProfile.set(user);
+        // console.log('Authenticated:', get(userProfile));
     }
 }
 
@@ -51,13 +51,13 @@ async function login() {
 async function logout() {
     console.log('Attempting to logout...');
 
-    await get(auth0Client).getUser().then(user => console.log('User:', user));
-
     try {
         const client = get(auth0Client);
         await client.logout({
             returnTo: window.location.origin
         });
+        userProfile.set({});
+        isAuthenticated.set(false);
     } catch (error) {
         console.error('Logout error:', error);
     }

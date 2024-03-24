@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import MainNav from '$lib/components/mainNav.svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;
+	import { login, isAuthenticated} from "$lib/auth";
+
+	$: if (!$isAuthenticated) {
+		login();
+	}
+
 
 	let examples = [
 		{
