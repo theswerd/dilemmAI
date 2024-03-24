@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SpinnerUI from '$lib/components/spinner_ui.svelte';
 	import { cn } from '$lib/utils';
 
 	let user_profile = {
@@ -18,24 +19,12 @@
 		{
 			emoji: '😮',
 			color: '#1F2430'
-		},
-		{
-			emoji: '📚',
-			color: '#6D183D'
-		},
-		{
-			emoji: '🎬',
-			color: '#9BE9FC'
-		},
-		{
-			emoji: '✅',
-			color: '#813584'
 		}
 	];
-
+	const initial_angle = 0.3;
 	const radius = 100; // Define a radius for the circular pattern
 	const positions = opponents.map((_, i) => {
-		const angle = (i / opponents.length) * Math.PI * 2;
+		const angle = (i / opponents.length) * Math.PI * 2 + initial_angle;
 		const x = Math.cos(angle) * radius;
 		const y = Math.sin(angle) * radius;
 		return { x, y };
@@ -60,75 +49,24 @@
 	<div class="mt-10 scroll-m-20 text-center text-4xl font-extrabold tracking-tight lg:text-5xl">
 		Waiting Room
 	</div>
-	<div class="screen-center relative">
-		<div
-			class=" absolute left-1/2 top-1/2 aspect-square h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed border-gray-500"
-		/>
-
-		<div
-			class="container"
-			style="background: {user_profile.color}; border-color: {getBorderColor(
-				user_profile.color
-			)};border-width: 4px;"
-		>
-			<div class="center rounded-full">
-				<span class="text-[80px]">{user_profile.emoji}</span>
-			</div>
-			{#each opponents as opponent, i (opponent.emoji)}
-				<div
-					class="opponent aspect-square rounded-full p-8"
-					style="
-          left: {50 + positions[i].x}%;
-          top: {50 + positions[i].y}%;
-          background: {opponent.color};
-          border-color: {getBorderColor(opponent.color)};
-          border-width: 3px;
-        "
-				>
-					<span class="text-[69px]">{opponent.emoji}</span>
-				</div>
-			{/each}
-		</div>
-	</div>
+	<SpinnerUI
+		center_item={user_profile}
+		outside_items={[
+			{
+				emoji: '🪜',
+				color: '#b5a9f9'
+			},
+			{
+				emoji: '👁️‍🗨️',
+				color: '#f9f9f9'
+			},
+			{
+				emoji: '😮',
+				color: '#1F2430'
+			}
+		]}
+	/>
 	<p class="text-muted-foreground absolute bottom-12 left-1/2 -translate-x-1/2 text-xl">
 		Tournament Starts Soon...
 	</p>
 </div>
-
-<style>
-	.screen-center {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
-
-	.container {
-		position: relative;
-		width: 300px; /* Adjust as needed */
-		height: 300px; /* Adjust as needed */
-		border-radius: 50%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.center {
-		/* Ensure this is also a circle and can contain the emoji */
-		width: 100px; /* Adjust as needed */
-		height: 100px; /* Adjust as needed */
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.opponent {
-		position: absolute;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		transform: translate(-50%, -50%);
-		border-radius: 50%; /* This makes it a circle */
-		overflow: hidden; /* Ensures content doesn't spill outside the circle */
-	}
-</style>

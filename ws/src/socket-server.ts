@@ -21,7 +21,7 @@ export const main = () => {
   const io = new Server(httpServer, {
     cors: {
       origin: "*",
-      methods: ["GET", "POST"],
+      methods: "*",
     },
   });
 
@@ -38,9 +38,8 @@ export const main = () => {
   // let tournamentRound: Array<OneVOne[]>;
   
   // Player connects to Tournament
-  io.on("connect", (socket) => {
-    console.log("Player connected");
-
+  io.on("connect",async (socket) => {
+    
     // Add player to memory when they connect to lobby
     socket.on("selectAgent", (playerInfo: Player, agent: Agent) => {
       playersQueue.push({
@@ -48,6 +47,8 @@ export const main = () => {
         agent: agent,
         socketId: socket.id,
       });
+      
+    io.emit("queueUpdate", playersQueue.map(({ agent }) => agent));
     });
 
     if (playersQueue.length === 4) {
@@ -78,8 +79,14 @@ export const main = () => {
       );
     });
 
-    // send confirmation
-    socket.emit("connected", "You are connected");
+    while (socket.connected){
+      // await
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("STILL CONNECTED")
+      socket.emit("time", new Date().toTimeString());
+    }
+
+
   });
 
   const PORT = process.env.PORT || 3001;

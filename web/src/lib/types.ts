@@ -2,7 +2,8 @@ import { Socket } from "socket.io-client";
 
 
 export interface SocketState {
-  socketState: "connecting" | "connected" | "disconnected" | "error",
+  isConnected: boolean,
+  // socketState: "connecting" | "connected" | "disconnected" | "error",
   socket: Socket | null
 }
 export interface PlayerSession {
@@ -21,6 +22,8 @@ export interface Agent {
   // Agent Profile
   agentID: string;
   playerID: string; // Owner of given agent
+  agentEmoji: string; // Emoji representation of agent
+  agentColor: string; // Color of agent
   inputStrategy: string; // Strategy that player/owner inputs for their agent  
 }
 

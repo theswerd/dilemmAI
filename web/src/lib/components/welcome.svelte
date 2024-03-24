@@ -1,7 +1,10 @@
-<script>
+<script lang='ts'>
 	import { goto } from '$app/navigation';
+	import type { Agent } from '$lib/types';
 	import { Button } from './ui/button';
 	import { Input } from './ui/input';
+
+	export let availableAgents: Agent[]
 </script>
 
 <div
@@ -14,6 +17,10 @@
 	<span>Join the Prisoner’s Dilemma Tournament</span>
 	<div class="flex items-center space-x-3">
 		<Button class="h-[48px] rounded-lg" on:click={()=>{
+			if (availableAgents.length === 0) {
+				goto('/create-agent?destination=/tournament-queue')
+				return  
+			}
 			goto('/tournament-queue')
 		}}>Join Tournament</Button>
 		<Button class="h-[48px] rounded-lg bg-transparent text-black border-black border-[1px] hover:bg-gray-100 focus:bg-gray-300">Learn More</Button>
