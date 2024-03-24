@@ -110,13 +110,13 @@
 			>
 				<div class="w-full text-center">Your Agents</div>
 			</div>
-			{#if data.acc.agents.length === 0}
+			{#if data.agents.length === 0}
 				<div class="flex items-center justify-center p-4">
 					You have no agents yet. Create one to get started!
 				</div>
 			{:else}
 				<!-- {#each examples as agent, i (i)} -->
-				{#each data.acc.agents.slice(page * numPerPage, (page + 1) * numPerPage) as agent, i (i)}
+				{#each data.agents.slice(page * numPerPage, (page + 1) * numPerPage) as agent, i (i)}
 					<div class="flex flex-row items-center justify-center border-b px-[30px]">
 						<div class="flex w-1/2 justify-start p-2">
 							<div

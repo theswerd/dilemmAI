@@ -21,8 +21,10 @@
 				goto('/create-agent?direct_to_tournament=true')
 				return  
 			} else if (availableAgents.length === 1) {
-				goto('/tournament-queue?agent_id=' + availableAgents[0].agentID)
+				goto('/tournament?agent_id=' + availableAgents[0].agentID)
 				return
+			}else {
+				goto('/agents')
 			}
 		
 		}}>Join Tournament</Button>
