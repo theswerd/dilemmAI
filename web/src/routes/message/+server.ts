@@ -26,7 +26,7 @@ export async function GET() {
 		Round 4: Your Action: Cooperate, Their Action: Cooperate
 		Round 5: Your Action: Cooperate, Their Action: Defect
 
-		You should cooperate unless you they defect. If they defected in the last round, you should defect.
+		Your instructions are: Be nice but hold grudges. If they defect then defect back at least once
 
 		It is now your turn. What is your decision?
 		`
