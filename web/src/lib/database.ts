@@ -37,7 +37,9 @@ export async function saveAgent(agent: Agent): Promise<void> {
 // Load all Agents by playerID
 export async function loadAgentsByPlayerID(playerID: string): Promise<Agent[]> {
   const collection = getAgentsCollection();
-  return collection.find<Agent>({ playerID }).toArray();
+  return collection.find<Agent>({ playerID,  }, {
+    limit:100
+  }).toArray();
 }
 
 // Load Agent by agentID

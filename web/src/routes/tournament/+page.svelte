@@ -42,6 +42,10 @@
 			game = gameState as unknown as OneVOne;
 		});
 
+		socketStore.listen('tournamentFinish', () => {
+			state = 'summary';
+		});
+
 		socketStore.listen('agentDecision', (interaction) => {
 			console.log('agentDecision', interaction);
 			// interactions.push(interaction as unknown as Interaction);

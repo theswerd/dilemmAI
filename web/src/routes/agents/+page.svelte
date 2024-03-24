@@ -96,7 +96,7 @@
 			inputStrategy: 'Random'
 		}
 	];
-	const numPerPage = 6;
+	const numPerPage = 1000;
 	let page = 0;
 </script>
 

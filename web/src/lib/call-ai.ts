@@ -23,13 +23,14 @@ export const callAI = async (prompts: {
 		context,
 		systemPrompt: `
 	You are a game playing agent. You always respond with json objects with the key 'action' and the value 'cooperate' or 'defect'. Do not include any other keys.
+	
 	`
 	});
 
 	// t
 	const a1 = await session.prompt(prompts.prompt, {
 		grammar: await LlamaGrammar.getFor('json'),
-		maxTokens: 400
+		maxTokens: 350
 		// timeout
 	});
 	console.log('AI: ' + a1);

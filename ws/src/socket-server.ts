@@ -104,6 +104,10 @@ export const main = () => {
       tournament.round += 1;
       await runRound(io, tournament, i);
     }
+    tournament.playerSessions.forEach(({ socketId }) => {
+      let socket = io.sockets.sockets.get(socketId);
+      socket?.emit("tournamentFinish", tournament);
+    });
     const tournamentStats = generateTournamentStats(tournament);
 
     io.to(tournament.tournamentID).emit("tournamentFinish", tournamentStats);
@@ -201,10 +205,10 @@ export const main = () => {
     });
 
     return (
-      "The following is the history of the game so far:\n" +
+      desicions.length?( "The following is the history of the game so far:\n" +
       desicions.map(([yourDecision, otherDecision], idx) => {
         return `Round ${idx}: Your Action: ${yourDecision}, Their Action: ${otherDecision}\n`;
-      })
+      })):"This is your first round\n"
     );
   }
 
@@ -224,17 +228,20 @@ export const main = () => {
       socket?.emit("gameStart", thisGame);
     });
     for (let i = 0; i < interactionsLimit; i++) {
+      let ai1Prompt = await interactionsToString(interactions, agent1.agentID) +
+      `\nYou should ${agent1.inputStrategy}\nIt is now your turn, what is your decision?`;
+      console.log("AI1 Prompt", ai1Prompt);
       const agent1Move = await callAI({
         admin: "",
         prompt:
-          interactionsToString(interactions, agent1.agentID) +
+          await interactionsToString(interactions, agent1.agentID) +
           `\nYou should ${agent1.inputStrategy}\nIt is now your turn, what is your decision?`,
       });
 
       const agent2Move = await callAI({
         admin: "",
         prompt:
-          interactionsToString(interactions, agent2.agentID) +
+          await interactionsToString(interactions, agent2.agentID) +
           `\nYou should ${agent2.inputStrategy}\nIt is now your turn, what is your decision?`,
       });
 
@@ -255,7 +262,7 @@ export const main = () => {
       });
     }
 
-    
+
   }
 
   // async function broadcastToPairs(io: Server, pair: OneVOne) {
