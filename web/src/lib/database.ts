@@ -34,7 +34,14 @@ export async function saveAgent(agent: Agent): Promise<void> {
   await collection.updateOne({ agentID: agent.agentID }, { $set: agent }, { upsert: true });
 }
 
-export async function loadAgent(playerID: string): Promise<Agent | null> {
-    const collection = getAgentsCollection();
-    return collection.findOne<Agent>({ playerID });
+// Load all Agents by playerID
+export async function loadAgentsByPlayerID(playerID: string): Promise<Agent[]> {
+  const collection = getAgentsCollection();
+  return collection.find<Agent>({ playerID }).toArray();
+}
+
+// Load Agent by agentID
+export async function loadAgentByID(agentID: string): Promise<Agent | null> {
+  const collection = getAgentsCollection();
+  return collection.findOne<Agent>({ agentID });
 }

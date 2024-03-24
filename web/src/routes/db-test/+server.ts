@@ -1,30 +1,53 @@
-import { client, loadAgent, saveAgent } from "$lib/database";
+import { loadAgentByID, loadAgentsByPlayerID, saveAgent } from "$lib/database";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 // Fake agent data for testing
-const testAgent = {
-    agentID: 'testAgent1',
+const testAgent1 = {
+    agentID: 'testAgent1_loadedByID',
     playerID: 'testPlayer1',
     agentEmoji: '🤖',
     agentColor: 'blue',
     inputStrategy: 'test-strategy'
 };
 
+const testAgent2 = {
+    agentID: 'testAgent2_loadedByPlayerID',
+    playerID: 'testPlayer2',
+    agentEmoji: '💀',
+    agentColor: 'red',
+    inputStrategy: 'test-strategy'
+};
+
+const testAgent3 = {
+    agentID: 'testAgent3_loadedByPlayerID',
+    playerID: 'testPlayer2',
+    agentEmoji: '🤗',
+    agentColor: 'green',
+    inputStrategy: 'test-strategy'
+};
+
 
 export const GET: RequestHandler = async () => {
     try {
-        // Save the fake agent
-        await saveAgent(testAgent);
+        // Save all test Agents
+        await saveAgent(testAgent1);
+        await saveAgent(testAgent2);
+        await saveAgent(testAgent3);
 
-        // Load the fake agent
-        const loadedAgent = await loadAgent(testAgent.playerID);
+        // Load one Agent by agentID
+        const loadedAgentByID = await loadAgentByID(testAgent1.agentID);
 
-        // Return the result
+        // Load all Agents by playerID
+        const loadedAgentsByPlayerID = await loadAgentsByPlayerID(testAgent2.playerID);
+
+        // Return the loaded agent data
         return json({
-            message: "Hello from the server!",
-            db: client.db().databaseName,
-            loadedAgent: loadedAgent
+            message: "Success",
+            loadedAgentByID,
+            loadedAgentsByPlayerID
         });
+        
+
 
 
     } catch (e) {
