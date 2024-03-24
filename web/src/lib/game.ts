@@ -1,5 +1,6 @@
 import type { Agent, Interaction, PlayerSession, ActiveTournament } from './types';
 import { v4 as uuidv4 } from 'uuid';
+import { generatePairCombinations } from './utils/unique-pairs';
 
 export function createTournament(playerSessions: PlayerSession[]): ActiveTournament {
     // For a given agent, "schedule" oneVones with n / 2 other agents
@@ -14,11 +15,11 @@ export function createTournament(playerSessions: PlayerSession[]): ActiveTournam
     return {
         tournamentID: uuidv4(),
         playerSessions: playerSessions,
-        oneVones: uniquePairs.flat().map((game) => game.map(([agent1, agent2]) => ({
+        oneVones: uniquePairs.map((game) => game.map(([agent1, agent2]) => ({
         oneVoneID: uuidv4(),
         agents: [agents[agent1], agents[agent2]],
         interactions: [],
-        interactionsLimit: 7,
+        interactionsLimit: 5,
         winner: null,
         }))),
         round: 0

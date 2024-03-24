@@ -139,7 +139,7 @@
 							style={`background-color: ${agent.agentColor}; `}
 							on:click={() => {
 								window.open('/tournament?agent_id=' + agent.agentID, '_blank');
-								goto('/tournament-queue?agent_id=' + agent.agentID);
+								// goto('/tournament-queue?agent_id=' + agent.agentID);
 							}}
 						>
 							<svg

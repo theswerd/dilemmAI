@@ -36,38 +36,44 @@ export const main = () => {
   let playersQueue: Array<PlayerSession> = [];
   let tournament: ActiveTournament;
   // let tournamentRound: Array<OneVOne[]>;
-  
+
   // Player connects to Tournament
-  io.on("connect",async (socket) => {
-    
+  io.on("connect", async (socket) => {
     // Add player to memory when they connect to lobby
-    socket.on("selectAgent", (playerInfo: Player, agent: Agent) => {
-      playersQueue.push({
-        player: playerInfo,
-        agent: agent,
-        socketId: socket.id,
-      });
-      
-    io.emit("queueUpdate", playersQueue.map(({ agent }) => agent));
-    });
+    socket.on(
+      "selectAgent",
+      (data: Pick<PlayerSession, "agent" | "player">) => {
+        console.log("Player connected");
+        playersQueue.push({
+          player: data.player,
+          agent: data.agent,
+          socketId: socket.id,
+        });
 
-    if (playersQueue.length === 4) {
-      tournament = createTournament([...playersQueue]);
-      playersQueue = [];
-      // add socket by id to room
+        io.emit(
+          "queueUpdate",
+          playersQueue.map(({ agent }) => agent)
+        );
 
-      const roomSockets = tournament.playerSessions.map(
-        ({ socketId }) => socketId
-      );
-      io.sockets.sockets.forEach((socket) => {
-        if (roomSockets.includes(socket.id)) {
-          socket.join(tournament.tournamentID);
+        if (playersQueue.length === 4) {
+          console.log("Tournament starting");
+          tournament = createTournament([...playersQueue]);
+          playersQueue = [];
+          // add socket by id to room
+
+          const roomSockets = tournament.playerSessions.map(
+            ({ socketId }) => socketId
+          );
+          io.sockets.sockets.forEach((socket) => {
+            if (roomSockets.includes(socket.id)) {
+              socket.emit("tournamentStart", tournament);
+            }
+          });
+
+          runTourament(io, tournament);
         }
-      });
-      io.to(tournament.tournamentID).emit("tournamentStart", tournament);
-
-      runTourament(io, tournament);
-    }
+      }
+    );
 
     // start first round of tournament
 
@@ -77,20 +83,18 @@ export const main = () => {
       playersQueue = playersQueue.filter(
         (player) => player.socketId !== socket.id
       );
+
+      io.emit(
+        "queueUpdate",
+        playersQueue.map(({ agent }) => agent)
+      );
     });
-
-    while (socket.connected){
-      // await
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("STILL CONNECTED")
-      socket.emit("time", new Date().toTimeString());
-    }
-
-
   });
 
   const PORT = process.env.PORT || 3001;
-  httpServer.listen(PORT, () => console.log(`Server running on  http://localhost:${PORT}`));
+  httpServer.listen(PORT, () =>
+    console.log(`Server running on  http://localhost:${PORT}`)
+  );
 
   async function runTourament(
     io: Server,
@@ -214,7 +218,11 @@ export const main = () => {
     const thisGame = tournament.oneVones[round][game];
     const { agents, interactionsLimit, interactions } = thisGame;
     const [agent1, agent2] = agents!;
-
+    // get sockets in tournament
+    tournament.playerSessions.forEach(({ socketId }) => {
+      let socket = io.sockets.sockets.get(socketId);
+      socket?.emit("gameStart", thisGame);
+    });
     for (let i = 0; i < interactionsLimit; i++) {
       const agent1Move = await callAI({
         admin: "",
@@ -240,8 +248,14 @@ export const main = () => {
         outcome: [],
       };
       interactions.push(newInteraction);
-      io.to(tournament.tournamentID).emit("agentDecision", newInteraction);
+      console.log("New Interaction", newInteraction);
+      tournament.playerSessions.forEach(({ socketId }) => {
+        let socket = io.sockets.sockets.get(socketId);
+        socket?.emit("agentDecision", newInteraction);
+      });
     }
+
+    
   }
 
   // async function broadcastToPairs(io: Server, pair: OneVOne) {

@@ -6,7 +6,7 @@ import { socketStore } from "./socketState";
 const intialGameState: OneVOne = {
   oneVoneID: "",
   interactions: [],
-  interactionsLimit: 7,
+  interactionsLimit: 5,
   winner: null,
   startTime: new Date(),
 }

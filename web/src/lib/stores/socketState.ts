@@ -19,29 +19,37 @@ const createWebSocketStore = () => {
 	const { subscribe, set, update } = writable<SocketState>(initialState);
 
 	let socket: Socket;
-
+	const ping = () => {
+		socket.emit('ping');
+		return  new Promise((resolve) => {
+			socket.on('pong', () => {
+				resolve(null);
+			});
+		});
+	}
 	const connect = async () => {
-		new Promise((resolve, reject) => {
+		await new Promise( (resolve, reject) => {
 			socket = io(connectURL, {
 				// Optional: configuration options here
-				retries: 3
+				retries: 1
 			});
 
 			socket.connect();
 
 			socket.on('connect', () => {
-				console.log('ITERATING');
         
-				update((state) => ({ ...state, isConnected: true }));
+				update((state) => {
+					state.isConnected = true;
+					state.socket = socket;
+					return state;
+				});
+				resolve(null);
 				// update(state => ({ ...state, isConnected: true }));
 
 				// resolve(null);
 			});
 
-			socket.onAny((event, ...args) => {
-				console.log(event, args);
-			});
-
+	
 			// Example of handling custom message events
 			// socket.on('message', (message) => {
 			//     update(state => ({
@@ -55,11 +63,21 @@ const createWebSocketStore = () => {
 			});
 
 			socket.on('disconnect', () => {
+				console.log('disconnected');
 				update((state) => ({ ...state, isConnected: false }));
 				reject(null);
 			});
+
+			
 		});
+		
 	};
+
+    const listen = (event: string, callback: (message: unknown) => void) => {
+        if (socket) {
+            socket.on(event, callback);
+        }
+    }
 
 	const send = (event: string, message: unknown) => {
 		if (socket && socket.connected) {
@@ -85,7 +103,9 @@ const createWebSocketStore = () => {
 		connect,
 		send,
 		disconnect,
-		reset
+		reset,
+		ping,
+        listen
 	};
 };
 

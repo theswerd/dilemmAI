@@ -928,7 +928,7 @@
 							const urlParams = new URLSearchParams(window.location.search);
 							const direct_to_tournament = urlParams.get('direct_to_tournament');
 							if (direct_to_tournament) {
-								goto('/tournament-queue?agent_id=' + json.id);
+								goto('/tournament?agent_id=' + json.id);
 							}else {
 								goto('/agents');
 							}

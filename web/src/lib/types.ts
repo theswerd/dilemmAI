@@ -14,8 +14,7 @@ export interface PlayerSession {
 
 // The human user 
 export interface Player {
-  name: string;
-  pfpEmoji: string;
+  id: string;
 }
 
 export interface Agent {
