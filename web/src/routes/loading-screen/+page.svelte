@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SpinnerUI from '$lib/components/spinner_ui.svelte';
+	import { socketStore } from '$lib/stores/socketState';
 	import { cn } from '$lib/utils';
 
 	let user_profile = {
@@ -29,7 +30,7 @@
 		const y = Math.sin(angle) * radius;
 		return { x, y };
 	});
-
+	socketStore.listen("")
 	function getBorderColor(backgroundColor: string) {
 		// This is a very simplistic approach that inverts the color for the border.
 		// For a more sophisticated approach, you'd need a full color manipulation library.
@@ -53,16 +54,16 @@
 		center_item={user_profile}
 		outside_items={[
 			{
-				emoji: '🪜',
-				color: '#b5a9f9'
+				agentEmoji: '🪜',
+				agentColor: '#b5a9f9'
 			},
 			{
-				emoji: '👁️‍🗨️',
-				color: '#f9f9f9'
+				agentEmoji: '👁️‍🗨️',
+				agentColor: '#f9f9f9'
 			},
 			{
-				emoji: '😮',
-				color: '#1F2430'
+				agentEmoji: '😮',
+				agentColor: '#1F2430'
 			}
 		]}
 	/>

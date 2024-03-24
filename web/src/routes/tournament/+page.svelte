@@ -4,9 +4,12 @@
 	import { socketStore } from '$lib/stores/socketState';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
+	import { v4 } from 'uuid';
+	import type { Agent, Player, PlayerSession } from '$lib/types';
 	export let data: PageData;
+	let queue: Partial<Agent & { gscale?: boolean }>[] = generate_queue([]);
+
 	onMount(async () => {
-		// get agent_id
 		const urlParams = new URLSearchParams(window.location.search);
 		const agent_id = urlParams.get('agent_id');
 		if (!agent_id) {
@@ -16,18 +19,51 @@
 		// sleep 2 seconds
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 		await socketStore.connect();
+		// socketStore.listen('error', (data) => {
+		// 	alert('Error: ' + JSON.stringify(data));
+		// 	goto('/');
+		// });
+
+		// on disconnect
+
+		socketStore.listen('queueUpdate', (data) => {
+			queue = generate_queue(data as unknown as Partial<Agent>[]);
+		});
+
+		socketStore.send('selectAgent', {
+			player: {
+				id: v4()
+			},
+			agent: data.agent
+		} as Pick<PlayerSession, 'agent' | 'player'>);
 	});
+
+	function generate_queue(baseQueue: Partial<Agent & { gscale?: boolean }>[]) {
+		const queue = baseQueue.map((player) => {
+			return {
+				agentID: player.agentID,
+				agentEmoji: player.agentEmoji,
+				agentColor: player.agentColor,
+				gscale: false
+			};
+		});
+		while (queue.length < 3) {
+			queue.push({ agentID: v4(), agentEmoji: undefined, agentColor: '#bbbbbb', gscale: true });
+		}
+		return queue;
+	}
 </script>
 
 {#if $socketStore.isConnected}
-	<SpinnerUi
-		center_item={{ emoji: data.agent.agentEmoji, color: data.agent.agentColor }}
-		outside_items={[
-			{ emoji: undefined, color: '#bbbbbb', gscale: true },
-			{ emoji: undefined, color: '#bbbbbb', gscale: true },
-			{ emoji: undefined, color: '#bbbbbb', gscale: true }
-		]}
-	/>
+	<div class="h-screen w-screen overflow-hidden">
+		<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">
+			Searching for collaborators... or decievers
+		</h1>
+		<SpinnerUi
+			center_item={{ emoji: data.agent.agentEmoji, color: data.agent.agentColor }}
+			outside_items={queue}
+		/>
+	</div>
 {:else}
 	<div
 		class="transition-ease relative flex h-screen w-screen items-center justify-center text-center"

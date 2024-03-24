@@ -36,20 +36,49 @@ export const main = () => {
   let playersQueue: Array<PlayerSession> = [];
   let tournament: ActiveTournament;
   // let tournamentRound: Array<OneVOne[]>;
-  
+
   // Player connects to Tournament
-  io.on("connect",async (socket) => {
-    
+  io.on("connect", async (socket) => {
+    console.log("Player connected");
     // Add player to memory when they connect to lobby
-    socket.on("selectAgent", (playerInfo: Player, agent: Agent) => {
-      playersQueue.push({
-        player: playerInfo,
-        agent: agent,
-        socketId: socket.id,
-      });
-      
-    io.emit("queueUpdate", playersQueue.map(({ agent }) => agent));
-    });
+    socket.on(
+      "selectAgent",
+      (input: Pick<PlayerSession, "agent" | "player">) => {
+        console.log("Player selected agent");
+        // check if playerqueue already has player
+        // if not add player to queue
+        if (
+          playersQueue.find(
+            (player) => player.player.id === input.player.id
+          ) !== undefined
+        ) {
+          socket.emit("error", "Player already in queue");
+        }
+        playersQueue.push({
+          player: input.player,
+          agent: input.agent,
+          socketId: socket.id,
+        } as PlayerSession);
+
+        io.sockets.sockets.forEach((socket) => {
+          if (
+            playersQueue.map(({ socketId }) => socketId).includes(socket.id)
+          ) {
+            console.log("emitting queueUpdate");
+            socket.emit(
+              "queueUpdate",
+              playersQueue.filter((player)=>{
+                return player.socketId !== socket.id
+              }).map(({ agent }) => agent)
+            );
+          }
+        });
+      }
+      // io.emit(
+      //   "queueUpdate",
+      //   playersQueue.map(({ agent }) => agent)
+      // );
+    );
 
     if (playersQueue.length === 4) {
       tournament = createTournament([...playersQueue]);
@@ -70,27 +99,34 @@ export const main = () => {
     }
 
     // start first round of tournament
-
+    socket.on("ping", () => {
+      console.log("ping");
+      socket.emit("pong");
+    });
     // Player disconnects
     socket.on("disconnect", () => {
       console.log("Player disconnected");
       playersQueue = playersQueue.filter(
         (player) => player.socketId !== socket.id
       );
+      io.sockets.sockets.forEach((socket) => {
+        if (playersQueue.map(({ socketId }) => socketId).includes(socket.id)) {
+          console.log("emitting queueUpdate");
+          socket.emit(
+            "queueUpdate",
+            playersQueue.filter((player)=>{
+              return player.socketId !== socket.id
+            }).map(({ agent }) => agent)
+          );
+        }
+      });
     });
-
-    while (socket.connected){
-      // await
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("STILL CONNECTED")
-      socket.emit("time", new Date().toTimeString());
-    }
-
-
   });
 
   const PORT = process.env.PORT || 3001;
-  httpServer.listen(PORT, () => console.log(`Server running on  http://localhost:${PORT}`));
+  httpServer.listen(PORT, () =>
+    console.log(`Server running on  http://localhost:${PORT}`)
+  );
 
   async function runTourament(
     io: Server,

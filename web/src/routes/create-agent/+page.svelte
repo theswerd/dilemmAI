@@ -927,8 +927,11 @@
 							// check search params for destination
 							const urlParams = new URLSearchParams(window.location.search);
 							const direct_to_tournament = urlParams.get('direct_to_tournament');
-							if (direct_to_tournament) {
-								goto('/tournament-queue?agent_id=' + json.id);
+							console.log('direct_to_tournament', direct_to_tournament != null);
+							if (direct_to_tournament != null) {
+								console.log('insideee', json);
+								await goto('/tournament?agent_id=' + json.agentID);
+								console.log("survived?")
 							}else {
 								goto('/agents');
 							}
