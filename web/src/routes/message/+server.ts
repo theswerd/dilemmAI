@@ -14,5 +14,21 @@ export async function GET() {
 	// const { messages } =
 	
 
-	return text(await callAI(["Hello, how are you?"]));
+	return text((await callAI({
+		admin: `
+		`,
+		prompt: `
+
+		The following is the history of the game so far:
+		Round 1: Your Action: Cooperate, Their Action: Cooperate
+		Round 2: Your Action: Cooperate, Their Action: Cooperate
+		Round 3: Your Action: Cooperate, Their Action: Cooperate
+		Round 4: Your Action: Cooperate, Their Action: Cooperate
+		Round 5: Your Action: Cooperate, Their Action: Defect
+
+		Your instructions are: Be nice but hold grudges. If they defect then defect back at least once
+
+		It is now your turn. What is your decision?
+		`
+	})).action);
 }

@@ -1,80 +1,92 @@
 // src/stores/socketStore.js
 import { writable } from 'svelte/store';
 import { io, Socket } from 'socket.io-client';
-import type { Game } from '$lib/types';
+import type { SocketState } from '$lib/types';
 
-const connectURL = import.meta.env.VITE_WS_URL;
+const connectURL = 'http://localhost:3001';
 
 if (!connectURL) {
-    throw new Error('VITE_WS_URL is not defined in .env');
+	throw new Error('VITE_WS_URL is not defined in .env');
 }
 
 // Initial GameState
 const initialState = {
-    isConnected: false,
-    players: [],
-    currentRound: 0,
-    roundScores: [],
-    leaderboard: [],
+	socket: null,
+    isConnected: false
 };
 
 const createWebSocketStore = () => {
-    const { subscribe, set, update } = writable<Game>(initialState);
+	const { subscribe, set, update } = writable<SocketState>(initialState);
 
-    let socket: Socket;
+	let socket: Socket;
 
-    const connect = () => {
-        socket = io(connectURL, {
-            // Optional: configuration options here
-            autoConnect: true,
-        });
+	const connect = async () => {
+		new Promise((resolve, reject) => {
+			socket = io(connectURL, {
+				// Optional: configuration options here
+				retries: 3
+			});
 
-        socket.on('connect', () => {
-            update(state => ({ ...state, isConnected: true }));
-        });
+			socket.connect();
 
-        // Example of handling custom message events
-        // socket.on('message', (message) => {
-        //     update(state => ({
-        //         ...state,
-        //     }));
-        // });
+			socket.on('connect', () => {
+				console.log('ITERATING');
+        
+				update((state) => ({ ...state, isConnected: true }));
+				// update(state => ({ ...state, isConnected: true }));
 
-        socket.on('connect_error', (error) => {
-            console.log('connect_error', error)
-        });
+				// resolve(null);
+			});
 
-        socket.on('disconnect', () => {
-            update(state => ({ ...state, isConnected: false }));
-        });
-    };
+			socket.onAny((event, ...args) => {
+				console.log(event, args);
+			});
 
-    const send = (event: string, message: unknown) => {
-        if (socket && socket.connected) {
-            socket.emit(event, message);
-        } else {
-            console.error('Socket.IO is not connected.');
-        }
-    };
+			// Example of handling custom message events
+			// socket.on('message', (message) => {
+			//     update(state => ({
+			//         ...state,
+			//     }));
+			// });
 
-    const disconnect = () => {
-        if (socket) {
-            socket.disconnect();
-        }
-    };
+			socket.on('connect_error', (error) => {
+				console.log('connect_error', error);
+				reject(error);
+			});
 
-    // Reset the store to initial state upon disconnect
-    const reset = () => {
-        set(initialState);
-    };
+			socket.on('disconnect', () => {
+				update((state) => ({ ...state, isConnected: false }));
+				reject(null);
+			});
+		});
+	};
 
-    return {
-        subscribe,
-        connect,
-        send,
-        disconnect,
-        reset,
-    };
+	const send = (event: string, message: unknown) => {
+		if (socket && socket.connected) {
+			socket.emit(event, message);
+		} else {
+			console.error('Socket.IO is not connected.');
+		}
+	};
+
+	const disconnect = () => {
+		if (socket) {
+			socket.disconnect();
+		}
+	};
+
+	// Reset the store to initial state upon disconnect
+	const reset = () => {
+		set(initialState);
+	};
+
+	return {
+		subscribe,
+		connect,
+		send,
+		disconnect,
+		reset
+	};
 };
 
 export const socketStore = createWebSocketStore();
