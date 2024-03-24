@@ -7,7 +7,7 @@ import { v4 } from 'uuid';
 export async function POST({ request }) {
 	const { playerID, prompt, emoji, color } = await request.json();
     const newAgent = {
-        playerID: playerID,
+        playerID: "1",
         agentID:  v4(),
         agentEmoji: emoji,  
         agentColor: color,

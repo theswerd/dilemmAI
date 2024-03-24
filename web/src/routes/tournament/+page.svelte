@@ -84,7 +84,7 @@
 	{#if state === 'queue'}
 		<div class="h-screen w-screen overflow-hidden">
 			<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">
-				Searching for collaborators... or decievers
+				Searching for collaborators... or deceivers
 			</h1>
 			<SpinnerUi
 				center_item={{ emoji: data.agent.agentEmoji, color: data.agent.agentColor }}
