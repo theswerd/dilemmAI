@@ -1,0 +1,19 @@
+{
+  "name": "ws",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/uuid": "^9.0.8"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@socket.io/mongo-adapter": "^0.3.2",
+    "dotenv": "^16.4.5",
+    "socket.io": "^4.7.5",
+    "uud": "^0.0.0",
+    "uuid": "^9.0.1"
+  }
+}

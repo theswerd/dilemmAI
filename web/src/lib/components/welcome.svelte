@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import { Button } from './ui/button';
 	import { Input } from './ui/input';
 </script>
@@ -11,9 +12,10 @@
 		Welcome to DilemmAI
 	</h1>
 	<span>Join the Prisoner’s Dilemma Tournament</span>
-	<Input type="search" placeholder="Develop your agent’s strategy here" class="h-9 md:w-[300px]" />
 	<div class="flex items-center space-x-3">
-		<Button class="h-[48px] rounded-lg">Join Tournament</Button>
-		<p class="text-muted-foreground text-sm italic">Wait For Next One...</p>
+		<Button class="h-[48px] rounded-lg" on:click={()=>{
+			goto('/tournament-queue')
+		}}>Join Tournament</Button>
+		<Button class="h-[48px] rounded-lg bg-transparent text-black border-black border-[1px] hover:bg-gray-100 focus:bg-gray-300">Learn More</Button>
 	</div>
 </div>

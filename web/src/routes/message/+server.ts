@@ -14,7 +14,7 @@ export async function GET() {
 	// const { messages } =
 	
 
-	return text(await callAI({
+	return text((await callAI({
 		admin: `
 		`,
 		prompt: `
@@ -30,5 +30,5 @@ export async function GET() {
 
 		It is now your turn. What is your decision?
 		`
-	}));
+	})).action);
 }

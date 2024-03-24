@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 import { io, Socket } from 'socket.io-client';
 import type { SocketState } from '$lib/types';
 
-const connectURL = import.meta.env.VITE_WS_URL;
+const connectURL ="http://localhost:3001";
 
 if (!connectURL) {
     throw new Error('VITE_WS_URL is not defined in .env');
@@ -20,14 +20,17 @@ const createWebSocketStore = () => {
 
     let socket: Socket;
 
-    const connect = () => {
+    const connect = async () => {
+        new Promise((resolve, reject)=>{
         socket = io(connectURL, {
             // Optional: configuration options here
             autoConnect: true,
         });
 
         socket.on('connect', () => {
+            
             update(state => ({ ...state, isConnected: true }));
+            resolve(null);
         });
 
         // Example of handling custom message events
@@ -39,11 +42,14 @@ const createWebSocketStore = () => {
 
         socket.on('connect_error', (error) => {
             console.log('connect_error', error)
+            reject(error);
         });
 
         socket.on('disconnect', () => {
             update(state => ({ ...state, isConnected: false }));
+            reject(null);
         });
+    });
     };
 
     const send = (event: string, message: unknown) => {

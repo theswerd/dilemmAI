@@ -9,25 +9,18 @@
 <nav class={cn('flex w-full items-center justify-between p-4 ', className)}>
 	<div class="flex items-center justify-center space-x-3">
 		<!-- LOGO -->
-		<Avatar.Root>
+		<!-- <Avatar.Root>
 			<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
 			<Avatar.Fallback>CN</Avatar.Fallback>
-		</Avatar.Root>
+		</Avatar.Root> -->
 		<span class="">DilemmAI</span>
 	</div>
 	<div class="flex items-center justify-center space-x-4 lg:space-x-6">
 		<a href="/examples/dashboard" class="hover:text-primary text-sm font-medium transition-colors">
 			Home
 		</a>
-
 		<a
-			href="/examples/dashboard"
-			class="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
-		>
-			Tournament
-		</a>
-		<a
-			href="/examples/dashboard"
+			href="/leaderboard"
 			class="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
 		>
 			LeaderBoard
