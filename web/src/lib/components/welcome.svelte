@@ -18,10 +18,13 @@
 	<div class="flex items-center space-x-3">
 		<Button class="h-[48px] rounded-lg" on:click={()=>{
 			if (availableAgents.length === 0) {
-				goto('/create-agent?destination=/tournament-queue')
+				goto('/create-agent?direct_to_tournament=true')
 				return  
+			} else if (availableAgents.length === 1) {
+				goto('/tournament-queue?agent_id=' + availableAgents[0].agentID)
+				return
 			}
-			goto('/tournament-queue')
+		
 		}}>Join Tournament</Button>
 		<Button class="h-[48px] rounded-lg bg-transparent text-black border-black border-[1px] hover:bg-gray-100 focus:bg-gray-300">Learn More</Button>
 	</div>

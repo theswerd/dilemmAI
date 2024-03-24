@@ -920,14 +920,15 @@
 							emoji: selectedEmoji,
 							color: selectedColor
 						})
-					}).then((res) => {
+					}).then(async (res) => {
 						if (res.ok) {
+							const json = await res.json();
 							alert('Agent created');
 							// check search params for destination
 							const urlParams = new URLSearchParams(window.location.search);
-							const destination = urlParams.get('destination');
-							if (destination) {
-								goto(destination);
+							const direct_to_tournament = urlParams.get('direct_to_tournament');
+							if (direct_to_tournament) {
+								goto('/tournament-queue?agent_id=' + json.id);
 							}else {
 								goto('/agents');
 							}

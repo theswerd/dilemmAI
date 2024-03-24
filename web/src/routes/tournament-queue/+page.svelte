@@ -1,9 +1,18 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import SpinnerUi from '$lib/components/spinner_ui.svelte';
 import { socketStore } from '$lib/stores/socketState';
 	import { onMount } from 'svelte';
-
+	import type { PageData } from './$types';
+    export let data: PageData;
 	onMount(async () => {
+        // get agent_id
+        const urlParams = new URLSearchParams(window.location.search);
+        const agent_id = urlParams.get('agent_id');
+        if (!agent_id) {
+            console.error('No agent_id provided');
+            goto('/create-agent');
+        }
         // sleep 2 seconds
         await new Promise((resolve) => setTimeout(resolve, 2000));
 		await socketStore.connect();
@@ -12,7 +21,7 @@ import { socketStore } from '$lib/stores/socketState';
 
 {#if $socketStore.isConnected}
 	<SpinnerUi 
-        center_item={{ emoji: '🌲', color: '#ff00ff' }}
+        center_item={{ emoji: data.agent.agentEmoji, color: data.agent.agentColor }}
         outside_items={[
             { emoji: undefined, color: '#bbbbbb' , gscale: true},
             { emoji: undefined, color: '#bbbbbb', gscale: true },
