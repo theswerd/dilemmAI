@@ -88,10 +88,11 @@ export const main = () => {
           console.log("roomSockets", roomSockets);
           io.sockets.sockets.forEach((socket) => {
             if (roomSockets.includes(socket.id)) {
-              socket.join(tournament.tournamentID);
+              // socket.join(tournament.tournamentID);
+              socket.emit("tournamentStart", tournament);
             }
           });
-          io.to(tournament.tournamentID).emit("tournamentStart", tournament);
+          // io.to(tournament.tournamentID).emit("tournamentStart", tournament);
 
           runTourament(io, tournament);
         }
@@ -254,7 +255,19 @@ export const main = () => {
     game: number
   ) {
     // let currentGame = {}
+
     const thisGame = tournament.oneVones[round][game];
+    // for session in tournament
+    // emit game start
+    console.log("game", thisGame);
+    tournament.playerSessions.forEach((session) => {
+     //get socket
+      const socket = io.sockets.sockets.get(session.socketId);
+      if (!socket) {
+        throw new Error("Socket not found");
+      }
+      socket?.emit("gameStart", thisGame);
+    });
     const { agents, interactionsLimit, interactions } = thisGame;
     const [agent1, agent2] = agents!;
 
@@ -273,14 +286,13 @@ export const main = () => {
           `\nYou should ${agent2.inputStrategy}\nIt is now your turn, what is your decision?`,
       });
 
-      const newInteraction = {
+      const newInteraction: Interaction = {
         interactionID: uuidv4(),
         oneVoneID: thisGame.oneVoneID,
         decisions: [
           { agentID: agent1.agentID, decision: agent1Move.action },
           { agentID: agent2.agentID, decision: agent2Move.action },
         ],
-        outcome: [],
       };
       interactions.push(newInteraction);
       io.to(tournament.tournamentID).emit("agentDecision", newInteraction);

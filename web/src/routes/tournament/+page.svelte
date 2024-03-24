@@ -5,10 +5,13 @@
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import { v4 } from 'uuid';
-	import type { Agent, Player, PlayerSession } from '$lib/types';
+	import type { Agent, Interaction, OneVOne, Player, PlayerSession } from '$lib/types';
+	import GameView from '$lib/components/gameView.svelte';
 	export let data: PageData;
 	let queue: Partial<Agent & { gscale?: boolean }>[] = generate_queue([]);
-	let state:'queue' | 'tournament'| 'summary' = "queue";
+	let state: 'queue' | 'tournament' | 'summary' = 'queue';
+	let game: OneVOne | undefined;
+	let interactions: Interaction[] = [];;
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const agent_id = urlParams.get('agent_id');
@@ -31,8 +34,16 @@
 		});
 
 		socketStore.listen('tournamentStart', () => {
-			alert('Tournament started');
 			state = 'tournament';
+		});
+		socketStore.listen('gameStart', (gameState) => {
+			console.log('game started');
+			interactions = [];
+			game = gameState as unknown as OneVOne;
+		});
+
+		socketStore.listen('agentDecision', (interaction) => {
+			interactions.push(interaction as unknown as Interaction);
 		});
 
 		socketStore.send('selectAgent', {
@@ -61,23 +72,21 @@
 
 {#if $socketStore.isConnected}
 	{#if state === 'queue'}
-		
-	<div class="h-screen w-screen overflow-hidden">
-		<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">
-			Searching for collaborators... or decievers
-		</h1>
-		<SpinnerUi
-			center_item={{ emoji: data.agent.agentEmoji, color: data.agent.agentColor }}
-			outside_items={queue}
-		/>
-	</div>
-	{:else if state === 'tournament'}
 		<div class="h-screen w-screen overflow-hidden">
 			<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">
-				Playing the game...
+				Searching for collaborators... or decievers
 			</h1>
-			
+			<SpinnerUi
+				center_item={{ emoji: data.agent.agentEmoji, color: data.agent.agentColor }}
+				outside_items={queue}
+			/>
 		</div>
+	{:else if state === 'tournament'}
+		<GameView game={game}
+
+		interactions={interactions}
+			
+		/>
 	{:else}
 		<div class="h-screen w-screen overflow-hidden">
 			<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">

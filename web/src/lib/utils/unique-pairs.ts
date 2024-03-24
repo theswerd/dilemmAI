@@ -1,6 +1,6 @@
-export function generatePairCombinations(players) {
+export function generatePairCombinations(players: number[]) {
   // Function to check if the combination is unique
-  function isUnique(pair1, pair2, combinations) {
+  function isUnique(pair1: [number, number], pair2: [number, number], combinations: [number, number][][]) {
     return !combinations.some(combo =>
       combo.some(set =>
         set[0] === pair1[0] && set[1] === pair1[1] &&
@@ -12,7 +12,7 @@ export function generatePairCombinations(players) {
   }
 
   // Generate all 2-player combinations
-  const allPairs = [];
+  const allPairs: [number, number][] = [];
   for (let i = 0; i < players.length; i++) {
     for (let j = i + 1; j < players.length; j++) {
       allPairs.push([players[i], players[j]]);

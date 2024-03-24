@@ -135,7 +135,8 @@
 								class="flex h-[40px] w-[40px] items-center justify-center rounded-full"
 								style={`background-color: ${agent.agentColor}; `}
 								on:click={() => {
-									goto('/tournament-queue?agent_id=' + agent.agentID);
+									window.open('/tournament?agent_id=' + agent.agentID, '_blank');
+									// goto('/tournament?agent_id=' + agent.agentID);
 								}}
 							>
 								<svg

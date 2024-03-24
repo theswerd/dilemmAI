@@ -5,19 +5,12 @@ import { LlamaModel, LlamaContext, LlamaChatSession, LlamaGrammar } from 'node-l
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const model = new LlamaModel({
-	modelPath: path.join(__dirname, '..', '..', 'models', 'llama-2-70b-chat.Q5_K_M.gguf')
+	modelPath: path.join(__dirname, '..', '..', 'models', 'llama-2-13b-chat.Q4_K_M.gguf')
 	// use gpu
 	// gpuLayers: 81
 });
-
 const context = new LlamaContext({ model });
 
-const session = new LlamaChatSession({
-	context,
-	systemPrompt: `
-You are a game playing agent. You always respond with json objects with the key 'action' and the value 'cooperate' or 'defect'. Do not include any other keys.
-`
-});
 // session.init();
 
 export const callAI = async (prompts: {
@@ -25,6 +18,13 @@ export const callAI = async (prompts: {
 	prompt: string;
 }): Promise<{ action: 'defect' | 'cooperate' }> => {
 	console.log('User: ' + prompts);
+
+	const session = new LlamaChatSession({
+		context,
+		systemPrompt: `
+You are a game playing agent. You always respond with json objects with the key 'action' and the value 'cooperate' or 'defect'. Do not include any other keys.
+`
+	});
 
 	const a1 = await session.prompt(prompts.prompt, {
 		grammar: await LlamaGrammar.getFor('json'),
