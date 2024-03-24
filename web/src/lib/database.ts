@@ -21,8 +21,7 @@ connect().then(() => {
   client.db().listCollections({ name: "agents" }).toArray().then(collections => {
     if (!collections.length) {
       client.db().createCollection("agents", {
-        capped: true,
-        size: 1e6
+        capped: false,
       }).then(() => console.log("Created collection for agents"))
         .catch(console.error);
     }

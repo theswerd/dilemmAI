@@ -8,7 +8,7 @@ dotenv.config();
 
 
 // Connect to your Atlas cluster
-export const client = new MongoClient('mongodb+srv://user:dilemmai@serverlessinstance0.kj5ngp8.mongodb.net/?retryWrites=true&w=majority&appName=ServerlessInstance0');
+export const client = new MongoClient('mongodb+srv://user:dilemmai@cluster0.0r8l7nq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
 
 // Connect to the MongoDB cluster
 export async function connect() {
@@ -24,6 +24,9 @@ connect().then(async () => {
       capped: true,
       size: 1e6
     });
+
+    console.log("Created collection for sockets");
+
   } catch (e) {
     // collection already exists
   }
