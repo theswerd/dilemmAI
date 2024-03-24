@@ -67,36 +67,41 @@ export const main = () => {
             console.log("emitting queueUpdate");
             socket.emit(
               "queueUpdate",
-              playersQueue.filter((player)=>{
-                return player.socketId !== socket.id
-              }).map(({ agent }) => agent)
+              playersQueue
+                .filter((player) => {
+                  return player.socketId !== socket.id;
+                })
+                .map(({ agent }) => agent)
             );
           }
         });
+        if (playersQueue.length === 4) {
+          console.log("Creating tournament");
+          tournament = createTournament([...playersQueue]);
+          playersQueue = [];
+          // add socket by id to room
+
+          const roomSockets = tournament.playerSessions.map(
+            ({ socketId }) => socketId
+          );
+          // add all players to room
+          console.log("roomSockets", roomSockets);
+          io.sockets.sockets.forEach((socket) => {
+            if (roomSockets.includes(socket.id)) {
+              socket.join(tournament.tournamentID);
+            }
+          });
+          io.to(tournament.tournamentID).emit("tournamentStart", tournament);
+
+          runTourament(io, tournament);
+        }
       }
+
       // io.emit(
       //   "queueUpdate",
       //   playersQueue.map(({ agent }) => agent)
       // );
     );
-
-    if (playersQueue.length === 4) {
-      tournament = createTournament([...playersQueue]);
-      playersQueue = [];
-      // add socket by id to room
-
-      const roomSockets = tournament.playerSessions.map(
-        ({ socketId }) => socketId
-      );
-      io.sockets.sockets.forEach((socket) => {
-        if (roomSockets.includes(socket.id)) {
-          socket.join(tournament.tournamentID);
-        }
-      });
-      io.to(tournament.tournamentID).emit("tournamentStart", tournament);
-
-      runTourament(io, tournament);
-    }
 
     // start first round of tournament
     socket.on("ping", () => {
@@ -114,9 +119,11 @@ export const main = () => {
           console.log("emitting queueUpdate");
           socket.emit(
             "queueUpdate",
-            playersQueue.filter((player)=>{
-              return player.socketId !== socket.id
-            }).map(({ agent }) => agent)
+            playersQueue
+              .filter((player) => {
+                return player.socketId !== socket.id;
+              })
+              .map(({ agent }) => agent)
           );
         }
       });

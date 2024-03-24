@@ -1,4 +1,4 @@
-function generatePairCombinations(players) {
+export function generatePairCombinations(players) {
   // Function to check if the combination is unique
   function isUnique(pair1, pair2, combinations) {
     return !combinations.some(combo =>

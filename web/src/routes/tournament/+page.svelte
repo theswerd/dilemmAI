@@ -8,7 +8,7 @@
 	import type { Agent, Player, PlayerSession } from '$lib/types';
 	export let data: PageData;
 	let queue: Partial<Agent & { gscale?: boolean }>[] = generate_queue([]);
-
+	let state:'queue' | 'tournament'| 'summary' = "queue";
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const agent_id = urlParams.get('agent_id');
@@ -28,6 +28,11 @@
 
 		socketStore.listen('queueUpdate', (data) => {
 			queue = generate_queue(data as unknown as Partial<Agent>[]);
+		});
+
+		socketStore.listen('tournamentStart', () => {
+			alert('Tournament started');
+			state = 'tournament';
 		});
 
 		socketStore.send('selectAgent', {
@@ -55,6 +60,8 @@
 </script>
 
 {#if $socketStore.isConnected}
+	{#if state === 'queue'}
+		
 	<div class="h-screen w-screen overflow-hidden">
 		<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">
 			Searching for collaborators... or decievers
@@ -64,6 +71,24 @@
 			outside_items={queue}
 		/>
 	</div>
+	{:else if state === 'tournament'}
+		<div class="h-screen w-screen overflow-hidden">
+			<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">
+				Playing the game...
+			</h1>
+			
+		</div>
+	{:else}
+		<div class="h-screen w-screen overflow-hidden">
+			<h1 class="m-8 mb-[220px] animate-pulse text-center text-3xl font-extrabold">
+				Results are in...
+			</h1>
+			<SpinnerUi
+				center_item={{ emoji: data.agent.agentEmoji, color: data.agent.agentColor }}
+				outside_items={queue}
+			/>
+		</div>
+	{/if}
 {:else}
 	<div
 		class="transition-ease relative flex h-screen w-screen items-center justify-center text-center"
