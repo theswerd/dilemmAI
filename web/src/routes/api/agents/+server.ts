@@ -5,9 +5,9 @@ import { v4 } from 'uuid';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
-	const { prompt, emoji, color } = await request.json();
+	const { playerID, prompt, emoji, color } = await request.json();
     const newAgent = {
-        playerID: "1",
+        playerID: playerID,
         agentID:  v4(),
         agentEmoji: emoji,  
         agentColor: color,

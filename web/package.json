@@ -52,6 +52,7 @@
     "embla-carousel-svelte": "^8.0.0",
     "express": "^4.19.1",
     "lucide-svelte": "^0.363.0",
+    "mermaid": "^10.9.0",
     "mongodb": "^6.5.0",
     "node-llama-cpp": "^2.8.9",
     "socket.io": "^4.7.5",
