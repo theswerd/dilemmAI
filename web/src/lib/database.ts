@@ -1,6 +1,6 @@
 import { MongoClient, Collection } from "mongodb";
 import dotenv from "dotenv";
-import { Agent } from "./types";
+import type { Agent } from "./types";
 
 dotenv.config();
 
