@@ -1,50 +1,43 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
-	import { Input } from './ui/input';
-	let className: string | undefined | null = undefined;
-	import { page } from '$app/stores';
+    import { cn } from '$lib/utils.js';
+    import { page } from '$app/stores';
+    import { login, logout, initializeAuth0 } from '$lib/service/useAuth';
+    import { onMount } from 'svelte';
 
-	export { className as class };
-	$: console.log($page.url.pathname);
+    let className: string | undefined | null = undefined;
+    export { className as class };
+
+    onMount(async () => {
+        await initializeAuth0();
+    });
+
 </script>
 
 <nav class={cn('flex w-full items-center justify-between p-4 ', className)}>
 	<div class="flex items-center justify-center space-x-3">
-		<!-- LOGO -->
-		<!-- <Avatar.Root>
-			<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-			<Avatar.Fallback>CN</Avatar.Fallback>
-		</Avatar.Root> -->
 		<span class="">DilemmAI</span>
 	</div>
 	<div class="flex items-center justify-center space-x-4 lg:space-x-6">
-		<a
-			href="/"
-			class={cn(
-				'hover:text-primary text-sm font-medium transition-colors',
-				$page.url.pathname === '/' ? 'text-primary' : 'text-muted-foreground'
-			)}
-		>
+		<a href="/" class={cn('hover:text-primary text-sm font-medium transition-colors', $page.url.pathname === '/' ? 'text-primary' : 'text-muted-foreground')}>
 			Home
 		</a>
-		<a
-			href="/leaderboard"
-			class={cn(
-				'hover:text-primary text-sm font-medium transition-colors',
-				$page.url.pathname === '/leaderboard' ? 'text-primary' : 'text-muted-foreground'
-			)}
-		>
+
+		<a href="/leaderboard" class={cn('hover:text-primary text-sm font-medium transition-colors', $page.url.pathname === '/leaderboard' ? 'text-primary' : 'text-muted-foreground')}>
 			LeaderBoard
 		</a>
-		<a
-			href="/agents"
-			class={cn(
-				'hover:text-primary text-sm font-medium transition-colors',
-				$page.url.pathname === '/agents' ? 'text-primary' : 'text-muted-foreground'
-			)}
-		>
+
+		<a href="/agents" class={cn('hover:text-primary text-sm font-medium transition-colors', $page.url.pathname === '/agents' ? 'text-primary' : 'text-muted-foreground')}>
 			My Agents
 		</a>
+
+		<!-- Login Button -->
+		<button on:click={async () => {
+			await login()}} class="hover:text-primary text-sm font-medium transition-colors">
+			Login
+		</button>
+
+		<!-- Logout Button -->
+		<button on:click={logout} class="hover:text-primary text-sm font-medium transition-colors">
+			Logout
 	</div>
 </nav>
