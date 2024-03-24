@@ -1,10 +1,11 @@
 import { MongoClient, Collection } from "mongodb";
 import dotenv from "dotenv";
 import type { Agent } from "./types";
+import { PUBLIC_MONGODB } from '$env/static/public';
 
 dotenv.config();
 
-export const client = new MongoClient(process.env.MONGODB as string);
+export const client = new MongoClient(PUBLIC_MONGODB);
 
 export async function connect() {
   await client.connect();
