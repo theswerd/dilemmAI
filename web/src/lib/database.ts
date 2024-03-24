@@ -4,29 +4,21 @@ import type { Agent } from "./types";
 
 dotenv.config();
 
-export const client = new MongoClient(process.env.MONGODB as string);
+// export const client = new MongoClient(process.env.MONGODB as string);
+export const client = new MongoClient("mongodb+srv://user:dilemmai@serverlessinstance0.kj5ngp8.mongodb.net/?retryWrites=true&w=majority&appName=ServerlessInstance0");
 
 export async function connect() {
   await client.connect();
 }
 
 const getAgentsCollection = (): Collection<Agent> => {
-  return client.db("agents").collection("agents");
+  return client.db().collection("agents");
 }
 
 // Ensure collections are created and the database is connected
-connect().then(() => {
+await connect().then(() => {
+  // console.log("server state:",client.db().serverStatus());
   console.log("Connected to MongoDB");
-
-  client.db().listCollections({ name: "agents" }).toArray().then(collections => {
-    if (!collections.length) {
-      client.db().createCollection("agents", {
-        capped: true,
-        size: 1e6
-      }).then(() => console.log("Created collection for agents"))
-        .catch(console.error);
-    }
-  });
 }).catch(console.error);
 
 export async function saveAgent(agent: Agent): Promise<void> {

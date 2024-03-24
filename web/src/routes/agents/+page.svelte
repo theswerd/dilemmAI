@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import MainNav from '$lib/components/mainNav.svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -110,11 +111,7 @@
 			>
 				<div class="w-full text-center">Your Agents</div>
 			</div>
-			{#if data.acc.agents.length === 0}
-				<div class="flex items-center justify-center p-4">
-					You have no agents yet. Create one to get started!
-				</div>
-			{:else}
+			{#if data.acc.agents.length !== 0}
 				<!-- {#each examples as agent, i (i)} -->
 				{#each data.acc.agents.slice(page * numPerPage, (page + 1) * numPerPage) as agent, i (i)}
 					<div class="flex flex-row items-center justify-center border-b px-[30px]">
@@ -126,16 +123,51 @@
 								{agent.agentEmoji}
 							</div>
 						</div>
-						<div class="flex w-1/2 flex-col items-end justify-end p-2">
-							<div class="text-md">Wins: 0</div>
-							<div class="text-md">Loses: 0</div>
-							<div class="w-full truncate text-sm font-light text-gray-400">
-								#{agent.agentID}
+						<div class="flex items-center justify-end space-x-2">
+							<div class="flex w-1/2 flex-col items-end justify-end p-2">
+								<div class="text-md">Wins: 0</div>
+								<div class="text-md">Loses: 0</div>
+								<div class="w-full truncate text-sm font-light text-gray-400">
+									#{agent.agentID}
+								</div>
 							</div>
+							<button
+								class="flex h-[40px] w-[40px] items-center justify-center rounded-full"
+								style={`background-color: ${agent.agentColor}; `}
+								on:click={() => {
+									goto('/tournament-queue?agent_id=' + agent.agentID);
+								}}
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="1.5em"
+									height="1.5em"
+									viewBox="0 0 24 24"
+									><path
+										fill="currentColor"
+										d="m4.497 20.835l16.51-7.363c1.324-.59 1.324-2.354 0-2.944L4.497 3.164c-1.495-.667-3.047.814-2.306 2.202l3.152 5.904c.245.459.245 1 0 1.458l-3.152 5.904c-.74 1.388.81 2.87 2.306 2.202"
+									/></svg
+								>
+							</button>
 						</div>
 					</div>
 				{/each}
 			{/if}
+			<div class="flex items-center justify-center p-4">
+				<button
+					class="rounded-full border"
+					on:click={() => {
+						goto('/create-agent');
+					}}
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"
+						><path
+							fill="currentColor"
+							d="M11 13H6q-.425 0-.712-.288T5 12q0-.425.288-.712T6 11h5V6q0-.425.288-.712T12 5q.425 0 .713.288T13 6v5h5q.425 0 .713.288T19 12q0 .425-.288.713T18 13h-5v5q0 .425-.288.713T12 19q-.425 0-.712-.288T11 18z"
+						/></svg
+					>
+				</button>
+			</div>
 		</div>
 	</div>
 </main>
