@@ -12,6 +12,7 @@ export const client = new MongoClient('mongodb+srv://user:dilemmai@cluster0.0r8l
 
 // Connect to the MongoDB cluster
 export async function connect() {
+  console.log("Connecting to MongoDB");
   await client.connect();
 }
 
