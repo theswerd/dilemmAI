@@ -20,6 +20,7 @@
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/eslint": "^8.56.0",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "autoprefixer": "^10.4.16",
@@ -41,16 +42,21 @@
   },
   "type": "module",
   "dependencies": {
-		"@huggingface/inference": "^2.6.6",
-		"ai": "^3.0.13",
-		"node-llama-cpp": "^2.8.9",
-    "socket.io-client": "^4.7.5",
+    "@huggingface/inference": "^2.6.6",
+    "@socket.io/mongo-adapter": "^0.3.2",
+    "ai": "^3.0.13",
     "bits-ui": "^0.20.0",
     "clsx": "^2.1.0",
+    "dotenv": "^16.4.5",
     "embla-carousel-svelte": "^8.0.0",
     "lucide-svelte": "^0.363.0",
+    "mongodb": "^6.5.0",
+    "node-llama-cpp": "^2.8.9",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.2.2",
-    "tailwind-variants": "^0.2.1"
+    "tailwind-variants": "^0.2.1",
+    "uuid": "^9.0.1"
   },
   "packageManager": "pnpm@8.14.1+sha1.d039b38e0b20ad012ed548e44267b8d4c88b447a"
 }

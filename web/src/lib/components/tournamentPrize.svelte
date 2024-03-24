@@ -36,7 +36,7 @@
 						<Card.Root>
 							<Card.Content class="flex aspect-square flex-col items-center justify-center p-6">
 								<img src={prize.img} alt="prize medal" />
-								<span class="text-2xl font-semibold">{prize.name}</span>
+								<span class="text-xl font-semibold">{prize.name}</span>
 							</Card.Content>
 						</Card.Root>
 					</div>
