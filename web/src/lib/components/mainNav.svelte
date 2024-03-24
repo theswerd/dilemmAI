@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { login, logout, initializeAuth0, isAuthenticated } from '$lib/auth';
 	import { onMount } from 'svelte';
+	import { base } from '$app/paths';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
@@ -14,6 +15,7 @@
 
 <nav class={cn('flex w-full items-center justify-between p-4 ', className)}>
 	<div class="flex items-center justify-center space-x-3">
+		<img src={`${base}/IMG_8798.png`} alt="logo" class="h-8 w-8" />
 		<span class="">DilemmAI</span>
 	</div>
 	<div class="flex items-center justify-center space-x-4 lg:space-x-6">
