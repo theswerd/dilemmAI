@@ -1,40 +1,35 @@
 import { Server as SocketIOServer } from 'socket.io';
 
 
-import type { Tournament, OneVOne, Agent, Interaction, Player } from './types';
+import type { OneVOne,Agent, Interaction, Player, PlayerSession, ActiveTournament } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 
-export function createTournament(agents: Agent[]): Tournament {
+export function createTournament(playerSessions: PlayerSession[]): ActiveTournament {
     // For a given agent, "schedule" oneVones with n / 2 other agents
     // For example: with 8 agents, each agent will play 4 OnevOnes
     
-    const oneVones: OneVOne[] = [];
-    for (let i = 0; i < agents.length; i++) {
-        for (let j = i + 1; j < agents.length; j++) {
-            oneVones.push(createOneVOne([agents[i], agents[j]]));
-        }
-    }
-
+    const uniquePairs = generatePairCombinations(Array(playerSessions.length).fill(0).map((_, i) => i));
+    const agents = playerSessions.map(({ agent }) => agent);
+    // uniquePairs = [[[1,2], [3,4]], [[1,3], [2,4]], [[1,4], [2,3]]]
+    // oneVones is a List of Rounds of OneVOnes
+    // Each Round is a List of OneVOnes
+    // All OneVOnes in a Round are played simultaneously
     return {
         tournamentID: uuidv4(),
-        agents: agents,
-        oneVones: oneVones,
-        startTime: new Date()
+        playerSessions: playerSessions,
+        oneVones: uniquePairs.map((round) => round.map(([agent1, agent2]) => ({
+            oneVoneID: uuidv4(),
+            agents: [agents[agent1], agents[agent2]],
+            interactions: [],
+            interactionsLimit: 7,
+            winner: null,
+            startTime: new Date()
+        }))),
+        round: 0
     };
 }
 
-// Helper function for createTournament
-function createOneVOne(agents: [Agent, Agent]): OneVOne {
-    return {
-        oneVoneID: uuidv4(),
-        agents: agents,
-        interactions: [],
-        interactionsLimit: 7,
-        winner: null,
-        startTime: new Date()
-    };
-}
 
 export function createInteraction(oneVoneID: string, decisions: { agentID: string; decision: 'cooperate' | 'defect' }[]): Interaction {
     // Calculate the outcome of the interaction

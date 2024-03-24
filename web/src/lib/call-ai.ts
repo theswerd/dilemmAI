@@ -15,7 +15,7 @@ const model = new LlamaModel({
 export const callAI = async (prompts: {
 	admin: string, 
 	prompt: string,
-}): Promise<string> => {
+}): Promise<{action: "defect"|"cooperate"}> => {
 	const context = new LlamaContext({model });
 
 	const session = new LlamaChatSession({context, systemPrompt: `

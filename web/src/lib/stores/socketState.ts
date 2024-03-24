@@ -1,7 +1,7 @@
 // src/stores/socketStore.js
 import { writable } from 'svelte/store';
 import { io, Socket } from 'socket.io-client';
-import type { Game } from '$lib/types';
+import type { SocketState } from '$lib/types';
 
 const connectURL = import.meta.env.VITE_WS_URL;
 
@@ -11,15 +11,12 @@ if (!connectURL) {
 
 // Initial GameState
 const initialState = {
-    isConnected: false,
-    players: [],
-    currentRound: 0,
-    roundScores: [],
-    leaderboard: [],
+    socketState: 'disconnected' as const,
+    socket: null,
 };
 
 const createWebSocketStore = () => {
-    const { subscribe, set, update } = writable<Game>(initialState);
+    const { subscribe, set, update } = writable<SocketState>(initialState);
 
     let socket: Socket;
 
