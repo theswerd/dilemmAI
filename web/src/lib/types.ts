@@ -60,7 +60,7 @@ export interface Interaction {
   interactionID: string;
   oneVoneID: string;
   decisions: { agentID: string; decision: 'cooperate' | 'defect' }[];
-  outcome: { agentID: string; points: number }[]; // Points gained or lost for both agents in this interaction
+  // outcome: { agentID: string; points: number }[]; // Points gained or lost for both agents in this interaction
 
 }
 

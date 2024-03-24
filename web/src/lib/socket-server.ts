@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import {v4 as uuidv4} from 'uuid';
 import { createServer } from 'http';
-import type { ActiveTournament, Agent, Interaction, MatchHistory, OneVOne, Player, PlayerSession, Tournament, TournamentStats } from './types';
+import type { ActiveTournament, Agent, Interaction, MatchHistory, OneVOne, Player, PlayerSession, TournamentStats } from './types';
 import { createTournament, calAgentScores} from './game';
 import { callAI } from './call-ai';
 import { createAdapter } from '@socket.io/mongo-adapter';
